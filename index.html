@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nguyễn Nhất Trung Hậu - Dual CV</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
+
+        /* === BIẾN MÀU CHO 2 CHẾ ĐỘ === */
+        :root {
+            --bg-color: #0b132b; 
+            --bg-gradient: linear-gradient(135deg, #0b132b 0%, #1c2541 100%);
+            --card-bg: rgba(28, 37, 65, 0.45);
+            --card-border: rgba(255, 255, 255, 0.12);
+            --text-main: #ffffff;
+            --text-muted: #a1b0c8;
+            --highlight: #5bc0be;
+            --glass-blur: blur(16px);
+        }
+
+        body.soul-mode {
+            --bg-color: #050a05;
+            --bg-gradient: linear-gradient(135deg, #050a05 0%, #0a1f10 100%);
+            --card-bg: rgba(10, 31, 16, 0.65);
+            --card-border: rgba(46, 139, 87, 0.3);
+            --text-main: #e0eee0;
+            --text-muted: #8a9a8a;
+            --highlight: #4ad66d;
+            --glass-blur: blur(16px);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Be Vietnam Pro', sans-serif;
+            transition: background-color 0.8s ease, color 0.8s ease, border-color 0.8s ease;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-main);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1050px;
+            margin: 0 auto;
+            padding: 50px 20px;
+        }
+
+        /* === KHUNG TƯƠNG TÁC AVATAR === */
+        .header-section {
+            text-align: center;
+            margin-bottom: 70px;
+        }
+
+        .avatar-interactive-wrapper {
+            position: relative;
+            display: inline-block;
+            padding: 12px;
+            border: 2px dashed var(--highlight);
+            border-radius: 25px;
+            cursor: pointer;
+            margin-bottom: 30px;
+            transition: all 0.4s ease;
+        }
+
+        .avatar-interactive-wrapper:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-style: solid;
+            box-shadow: 0 0 30px rgba(91, 192, 190, 0.3);
+        }
+        
+        body.soul-mode .avatar-interactive-wrapper:hover {
+            box-shadow: 0 0 30px rgba(74, 214, 109, 0.3);
+        }
+
+        .click-badge {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--highlight);
+            color: var(--bg-color);
+            padding: 8px 25px;
+            border-radius: 30px;
+            font-weight: 800;
+            font-size: 13px;
+            white-space: nowrap;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+            z-index: 10;
+            animation: bounce 2s infinite;
+            pointer-events: none;
+            text-transform: uppercase;
+        }
+
+        .avatar-switch-container {
+            position: relative;
+            width: 260px;
+            height: 320px;
+            perspective: 1200px;
+        }
+
+        .avatar-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.9s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+        }
+
+        body.soul-mode .avatar-inner {
+            transform: rotateY(180deg);
+        }
+
+        .avatar-front, .avatar-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .avatar-front img, .avatar-back img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .avatar-back {
+            transform: rotateY(180deg);
+        }
+
+        .name-title {
+            font-size: 42px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            letter-spacing: 2px;
+            margin-top: 20px;
+        }
+
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            color: var(--text-muted);
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        /* === BỐ CỤC NỘI DUNG === */
+        .content-wrapper {
+            position: relative;
+        }
+
+        .theme-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(40px);
+            transition: all 0.7s ease;
+        }
+
+        .theme-content.active {
+            position: relative;
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        /* Khối giới thiệu chung */
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 50px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+
+        .section-title {
+            font-size: 24px;
+            color: var(--highlight);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-transform: uppercase;
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
+
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--card-border);
+        }
+
+        ul.styled-list { list-style: none; }
+        ul.styled-list li { position: relative; padding-left: 30px; margin-bottom: 15px; color: var(--text-muted); font-size: 16px; }
+        ul.styled-list li::before { content: '•'; color: var(--highlight); font-size: 28px; position: absolute; left: 0; top: -8px; }
+
+        /* Nút bullet nhỏ hơn cho danh sách phụ */
+        ul.styled-list li ul { list-style: none; margin-top: 10px; margin-bottom: 5px; }
+        ul.styled-list li ul li { padding-left: 20px; margin-bottom: 8px; }
+        ul.styled-list li ul li::before { content: '○'; font-size: 16px; top: 2px; color: var(--highlight); }
+
+        /* === BỐ CỤC ZICZAC (MAGAZINE LAYOUT) === */
+        .story-container {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            margin-bottom: 50px;
+        }
+
+        .story-card {
+            display: flex;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            overflow: hidden;
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            height: 320px;
+        }
+
+        .story-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 45px rgba(0,0,0,0.3);
+            border-color: var(--highlight);
+        }
+
+        .story-card:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+
+        .story-img-wrap {
+            flex: 1.2;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .story-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: transform 0.6s ease;
+        }
+
+        .story-card:hover .story-img-wrap img {
+            transform: scale(1.08);
+        }
+
+        .dual-img-wrap {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+        .dual-img-wrap img {
+            width: 50%;
+            position: relative;
+            border-left: 1px solid var(--bg-color);
+        }
+        .dual-img-wrap img:first-child { border-left: none; }
+
+        .story-content {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .story-title {
+            color: var(--text-main);
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .story-title i { color: var(--highlight); }
+
+        .story-desc {
+            color: var(--text-muted);
+            font-size: 15.5px;
+            line-height: 1.8;
+            text-align: justify;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translate(-50%, 0); }
+            50% { transform: translate(-50%, -8px); }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 850px) {
+            .story-card, .story-card:nth-child(even) {
+                flex-direction: column;
+                height: auto;
+            }
+            .story-img-wrap {
+                min-height: 280px;
+            }
+            .dual-img-wrap img {
+                width: 100%;
+                height: 50%;
+                border-left: none;
+                border-bottom: 1px solid var(--bg-color);
+            }
+            .dual-img-wrap { flex-direction: column; }
+            .name-title { font-size: 32px; }
+            .contact-info { flex-direction: column; gap: 8px; align-items: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <!-- KHUNG TƯƠNG TÁC AVATAR -->
+        <div class="header-section">
+            <div class="avatar-interactive-wrapper" onclick="toggleUniverse()">
+                <div class="avatar-switch-container">
+                    <div class="avatar-inner">
+                        <!-- Mặt trước: Công việc -->
+                        <div class="avatar-front">
+                            <img src="anh-dai-dien.jpg" alt="CV Công việc">
+                        </div>
+                        <!-- Mặt sau: Cá nhân -->
+                        <div class="avatar-back">
+                            <img src="canhan2.PNG" alt="CV Cá nhân">
+                        </div>
+                    </div>
+                </div>
+                <div class="click-badge" id="badge-text"><i class="fa-solid fa-rotate"></i> NHẤP ĐỂ LẬT CV</div>
+            </div>
+            
+            <h1 class="name-title">NGUYỄN NHẤT TRUNG HẬU</h1>
+            <div class="contact-info">
+                <span><i class="fa-solid fa-phone"></i> 0971738655</span>
+                <span><i class="fa-solid fa-envelope"></i> nnth2107@gmail.com</span>
+            </div>
+        </div>
+
+        <div class="content-wrapper">
+            
+            <!-- ========================================== -->
+            <!-- VŨ TRỤ 1: THÂN XÁC - CÔNG VIỆC CHUẨN MỰC   -->
+            <!-- ========================================== -->
+            <div class="theme-content active" id="work-content">
+                
+                <div class="glass-card">
+                    <h2 class="section-title"><i class="fa-solid fa-briefcase"></i> Thông tin chung</h2>
+                    <ul class="styled-list">
+                        <li><strong>Mục tiêu:</strong> Mong muốn phát triển theo hướng giảng dạy, nghiên cứu và ứng dụng công nghệ vào giáo dục.</li>
+                        <li><strong>Chuyên môn:</strong> Giáo viên Toán – Trường THCS và THPT Phú Thành A (01/02/2025 – nay). Phối hợp nhịp nhàng với học sinh và đồng nghiệp trong các hoạt động giáo dục.</li>
+                        <li><strong>Điểm mạnh:</strong> Có trách nhiệm, kiên nhẫn với học sinh. Làm việc nghiêm túc, đúng thời hạn, ham học hỏi và có khả năng thích nghi nhanh.</li>
+                    </ul>
+                </div>
+
+                <!-- KHỐI HỌC VẤN VÀ CHỨNG CHỈ (THÔNG TIN ĐƯỢC BỔ SUNG) -->
+                <div class="glass-card">
+                    <h2 class="section-title"><i class="fa-solid fa-graduation-cap"></i> Học vấn & Chứng chỉ</h2>
+                    <ul class="styled-list">
+                        <li><strong>Trình độ học vấn:</strong> Tốt nghiệp Đại học khối ngành Sư phạm Toán học.</li>
+                        <li><strong>Xếp loại tốt nghiệp:</strong> <span style="color: var(--highlight); font-weight: bold;">Xuất sắc</span>. Nắm vững nền tảng tư duy logic, chuyên môn sâu rộng và phương pháp sư phạm hiện đại.</li>
+                        <li><strong>Chứng chỉ & Nghiệp vụ:</strong>
+                            <ul>
+                                <li><strong>Ngoại ngữ B1:</strong> Đủ năng lực tra cứu, nghiên cứu và tham khảo các tài liệu Toán học chuẩn quốc tế.</li>
+                                <li><strong>Chức danh nghề nghiệp:</strong> Hoàn thành chương trình bồi dưỡng theo tiêu chuẩn chức danh nghề nghiệp giáo viên, đáp ứng chuẩn mực giảng dạy.</li>
+                            </ul>
+                        </li>
+                        <li><strong>Kỹ năng bổ trợ (Công nghệ & Chế bản):</strong> 
+                            Thành thạo ứng dụng AI và mã nguồn <strong>Toggle TeX</strong>. Khả năng thiết kế, định dạng các văn bản Toán học phức tạp đạt chuẩn thẩm mỹ học thuật (đặc biệt trong việc thiết lập ma trận đề thi, không gian hình học đa chiều như quan hệ vuông góc, và xử lý dứt điểm các lỗi đường kẻ dọc bị đứt trong cấu trúc bảng biểu).
+                        </li>
+                    </ul>
+                </div>
+
+                <h2 class="section-title" style="margin-bottom: 30px;"><i class="fa-solid fa-images"></i> Hoạt động Cụ thể</h2>
+                
+                <div class="story-container">
+                    
+                    <!-- Bố cục Ziczac 1 -->
+                    <div class="story-card">
+                        <div class="story-img-wrap">
+                            <img src="trai-xuan-2026.JPG" alt="Cắm trại xuân 2026">
+                        </div>
+                        <div class="story-content">
+                            <h3 class="story-title"><i class="fa-solid fa-campground"></i> Cắm trại xuân 2026</h3>
+                            <p class="story-desc">Hòa mình cùng sức trẻ và sự năng động của các em học sinh. Tham gia các hoạt động ngoại khóa để thấu hiểu và rút ngắn khoảng cách thế hệ, từ đó tạo nên một môi trường giáo dục gần gũi và cởi mở.</p>
+                        </div>
+                    </div>
+
+                    <!-- Bố cục Ziczac 2 (Đảo ngược) -->
+                    <div class="story-card">
+                        <div class="story-img-wrap">
+                            <img src="Ngay-8-3.JPG" alt="Chào mừng ngày 8/3">
+                        </div>
+                        <div class="story-content">
+                            <h3 class="story-title"><i class="fa-solid fa-cake-candles"></i> Chào mừng 8/3</h3>
+                            <p class="story-desc">Những khoảnh khắc giản dị mà ấm áp, thắt chặt tình đoàn kết và gắn bó với các anh chị em đồng nghiệp trong tổ bộ môn Toán. Sự đồng lòng của tập thể là nền tảng vững chắc cho mọi hoạt động chuyên môn.</p>
+                        </div>
+                    </div>
+
+                    <!-- Bố cục Ziczac 3 (Gác thi - Lưới 2 ảnh) -->
+                    <div class="story-card">
+                        <div class="story-img-wrap">
+                            <div class="dual-img-wrap">
+                                <img src="gacthi1.JPG" alt="Đi gác thi 1">
+                                <img src="gacthi2.JPG" alt="Đi gác thi 2">
+                            </div>
+                        </div>
+                        <div class="story-content">
+                            <h3 class="story-title"><i class="fa-solid fa-id-badge"></i> Đi gác thi</h3>
+                            <p class="story-desc">Thực hiện nhiệm vụ tại Hội đồng coi thi. Luôn đề cao tinh thần trách nhiệm, sự nghiêm túc và tính công bằng, minh bạch trong quá trình kiểm tra, đánh giá năng lực của học sinh.</p>
+                        </div>
+                    </div>
+
+                    <!-- Bố cục Ziczac 4 (Đảo ngược) -->
+                    <div class="story-card">
+                        <div class="story-img-wrap">
+                            <img src="cuoinam.JPG" alt="Chụp với học sinh cuối năm">
+                        </div>
+                        <div class="story-content">
+                            <h3 class="story-title"><i class="fa-solid fa-camera-retro"></i> Chụp với học sinh</h3>
+                            <p class="story-desc">Lưu giữ lại những nụ cười rạng rỡ và kỷ niệm đẹp khi khép lại một năm học nỗ lực không ngừng nghỉ. Đây chính là động lực to lớn nhất để tiếp tục gắn bó và cống hiến cho bục giảng.</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ========================================== -->
+            <!-- VŨ TRỤ 2: LINH HỒN - LÃNG MẠN & TRẦM BUỒN  -->
+            <!-- ========================================== -->
+            <div class="theme-content" id="soul-content">
+                
+                <div class="glass-card">
+                    <h2 class="section-title"><i class="fa-solid fa-feather-pointed"></i> Cuộc sống cá nhân</h2>
+                    <ul class="styled-list">
+                        <li><strong>Thế giới nội tâm:</strong> Dành thời gian suy tư, chiêm nghiệm và viết lại những cảm xúc của bản thân. Yêu thích không gian yên tĩnh, đôi khi ở một mình để đọc sách, nghe nhạc và sắp xếp lại những bộn bề trong suy nghĩ.</li>
+                        <li><strong>Sở thích tĩnh lặng:</strong> Thích ngủ để tái tạo năng lượng. Có thói quen thích buồn một mình để lắng nghe chính mình, thả lỏng tâm trí sau những ngày dài.</li>
+                        <li><strong>Văn học:</strong> Đọc thơ, đặc biệt trót đem lòng yêu thích thơ Chế Lan Viên và thường suy ngẫm về giá trị nhân sinh trong văn học. Dẫu vậy, tận sâu bên trong vẫn luôn mang một nỗi sợ vô hình trước những nhận định sắc sảo, quá đỗi chân thật của cụ.</li>
+                    </ul>
+                </div>
+
+                <h2 class="section-title" style="margin-bottom: 30px;"><i class="fa-solid fa-leaf"></i> Mảnh ghép Cảm xúc</h2>
+
+                <div class="story-container">
+                    
+                    <!-- Bố cục Ziczac 1 -->
+                    <div class="story-card">
+                        <div class="story-img-wrap">
+                            <img src="dichua.JPG" alt="Đi chùa">
+                        </div>
+                        <div class="story-content">
+                            <h3 class="story-title"><i class="fa-solid fa-hands-praying"></i> Thích đi chùa</h3>
+                            <p class="story-desc">Đi chùa để tìm sự bình yên và cân bằng tinh thần. Bỏ lại phía sau những ồn ào vội vã để tìm kiếm sự an trú trong tâm hồn, lắng nghe tiếng nói bên trong để thấu hiểu bản thân nhiều hơn.</p>
+                        </div>
+                    </div>
+
+                    <!-- Bố cục Ziczac 2 (Đảo ngược) -->
+                    <div class="story-card">
+                        <div class="story-img-wrap">
+                            <img src="xemphim.JPG" alt="Xem phim">
+                        </div>
+                        <div class="story-content">
+                            <h3 class="story-title"><i class="fa-solid fa-film"></i> Xem phim với bạn</h3>
+                            <p class="story-desc">Xem phim cùng bạn bè, coi đó là cách gắn kết các mối quan hệ. Nơi lưu giữ những tiếng cười, kỷ niệm thanh xuân và san sẻ những câu chuyện đời thường giản dị nhất.</p>
+                        </div>
+                    </div>
+
+                    <!-- Bố cục Ziczac 3 -->
+                    <div class="story-card">
+                        <div class="story-img-wrap">
+                            <img src="lien-quan.jpg" alt="Chơi liên quân" onerror="this.src='https://via.placeholder.com/800x600/0a1f10/4ad66d?text=Lien+Quan'">
+                        </div>
+                        <div class="story-content">
+                            <h3 class="story-title"><i class="fa-solid fa-gamepad"></i> Chơi liên quân</h3>
+                            <p class="story-desc">Chơi Liên Quân để giải trí và rèn luyện tư duy chiến thuật. Không chỉ là một trò chơi, đó còn là nơi thấu hiểu sức mạnh của sự kết nối, kỹ năng phối hợp đồng đội nhịp nhàng.</p>
+                        </div>
+                    </div>
+
+                    <!-- Bố cục Ziczac 4 (Đảo ngược) -->
+                    <div class="story-card">
+                        <div class="story-img-wrap">
+                            <img src="tien-nghich.jpg" alt="Xem hoạt hình: Tiên Ngịch" onerror="this.src='https://via.placeholder.com/800x600/0a1f10/4ad66d?text=Tien+Nghich'">
+                        </div>
+                        <div class="story-content">
+                            <h3 class="story-title"><i class="fa-solid fa-dragon"></i> Hoạt hình: Tiên Ngịch</h3>
+                            <p class="story-desc">Xem hoạt hình, đặc biệt yêu thích bộ Tiên Nghịch. Đắm chìm vào những triết lý nhân sinh, hành trình nghịch thiên cải mệnh sâu sắc và thế giới nghệ thuật đầy tính sáng tạo.</p>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function toggleUniverse() {
+            const body = document.body;
+            const badgeText = document.getElementById('badge-text');
+            const workContent = document.getElementById('work-content');
+            const soulContent = document.getElementById('soul-content');
+
+            body.classList.toggle('soul-mode');
+
+            if (body.classList.contains('soul-mode')) {
+                workContent.classList.remove('active');
+                soulContent.classList.add('active');
+                badgeText.innerHTML = '<i class="fa-solid fa-rotate-left"></i> QUAY VỀ THỰC TẠI';
+            } else {
+                soulContent.classList.remove('active');
+                workContent.classList.add('active');
+                badgeText.innerHTML = '<i class="fa-solid fa-rotate"></i> NHẤP ĐỂ LẬT CV';
+            }
+        }
+    </script>
+</body>
+</html>
