@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Portfolio - Nguyễn Nhất Trung Hậu</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* =========================================
+           CORE VARIABLES & THEME STATE
+        ========================================= */
+        :root {
+            /* Palette: Academic (Cyberpunk Blue & Neon Pink) */
+            --ac-bg: #050505;
+            --ac-surface: rgba(15, 23, 42, 0.4);
+            --ac-primary: #00f0ff;
+            --ac-secondary: #ff007f;
+            --ac-border: rgba(0, 240, 255, 0.3);
+            --ac-glow: 0 0 30px rgba(0, 240, 255, 0.2), inset 0 0 20px rgba(255, 0, 127, 0.1);
+            
+            /* Palette: Personal (Mystic Emerald & Gold) */
+            --pe-bg: #01120a;
+            --pe-surface: rgba(6, 78, 59, 0.3);
+            --pe-primary: #00ff88;
+            --pe-secondary: #fbbf24;
+            --pe-border: rgba(0, 255, 136, 0.3);
+            --pe-glow: 0 0 30px rgba(0, 255, 136, 0.2), inset 0 0 20px rgba(251, 191, 36, 0.1);
+
+            /* Dynamic Variables (Controlled via Body Class) */
+            --bg-color: var(--ac-bg);
+            --surface: var(--ac-surface);
+            --primary: var(--ac-primary);
+            --secondary: var(--ac-secondary);
+            --border: var(--ac-border);
+            --glow: var(--ac-glow);
+            
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+            --font-main: 'Plus Jakarta Sans', sans-serif;
+            --font-display: 'Space Grotesk', sans-serif;
+        }
+
+        body.personal-mode {
+            --bg-color: var(--pe-bg);
+            --surface: var(--pe-surface);
+            --primary: var(--pe-primary);
+            --secondary: var(--pe-secondary);
+            --border: var(--pe-border);
+            --glow: var(--pe-glow);
+        }
+
+        /* =========================================
+           GLOBAL RESET & UTILITIES
+        ========================================= */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow-x: hidden;
+            line-height: 1.6;
+            transition: background-color 1s ease;
+            cursor: none; 
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-color); }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+
+        /* Custom Cursor */
+        .cursor-dot, .cursor-outline {
+            position: fixed; top: 0; left: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 50%; z-index: 9999;
+            pointer-events: none;
+        }
+        .cursor-dot { width: 8px; height: 8px; background: var(--primary); }
+        .cursor-outline {
+            width: 40px; height: 40px;
+            border: 1px solid var(--primary);
+            transition: width 0.2s, height 0.2s;
+        }
+
+        /* Background Effects */
+        .noise-overlay {
+            position: fixed; inset: 0; z-index: 0; pointer-events: none;
+            background: url('https://grainy-gradients.vercel.app/noise.svg');
+            opacity: 0.05; mix-blend-mode: overlay;
+        }
+        .ambient-light {
+            position: fixed; inset: 0; z-index: 0; pointer-events: none;
+            background: radial-gradient(circle at 50% 0%, rgba(var(--primary), 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 100% 100%, rgba(var(--secondary), 0.1) 0%, transparent 50%);
+            transition: all 1s ease;
+        }
+
+        /* =========================================
+           NAVIGATION
+        ========================================= */
+        nav {
+            position: fixed; top: 0; left: 0; width: 100%;
+            padding: 20px 4vw; display: flex; justify-content: space-between; align-items: center;
+            z-index: 100;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+            backdrop-filter: blur(10px);
+        }
+        
+        .logo {
+            font-family: var(--font-display); font-size: 1.8rem; font-weight: 800;
+            letter-spacing: -1px; text-transform: uppercase;
+            position: relative;
+        }
+        .logo span {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        /* Glitch Button Toggle */
+        .cyber-btn {
+            background: transparent; border: 1px solid var(--primary); color: var(--primary);
+            padding: 12px 25px; border-radius: 4px; font-family: var(--font-display);
+            font-weight: 600; font-size: 1rem; cursor: none; position: relative;
+            overflow: hidden; text-transform: uppercase; letter-spacing: 2px;
+            transition: 0.3s; box-shadow: 0 0 15px rgba(0,0,0,0.5);
+        }
+        .cyber-btn::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+        .cyber-btn:hover::before { left: 100%; }
+        .cyber-btn:hover { background: rgba(255,255,255,0.05); box-shadow: var(--glow); transform: translateY(-2px); }
+
+        /* =========================================
+           BENTO GRID & 3D CARDS
+        ========================================= */
+        .wrapper {
+            position: relative; z-index: 10;
+            max-width: 1600px; margin: 0 auto;
+            padding: 120px 3vw 5vw 3vw;
+        }
+
+        .cv-view { display: none; opacity: 0; transform: translateY(30px); }
+        .cv-view.active { display: block; opacity: 1; transform: translateY(0); animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(150px, auto);
+            gap: 20px;
+        }
+
+        .bento-box {
+            background: var(--surface);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 40px;
+            position: relative;
+            display: flex; flex-direction: column;
+            transform-style: preserve-3d;
+            transform: perspective(1000px);
+            transition: border-color 0.4s ease, box-shadow 0.4s ease, background 0.4s ease;
+        }
+        
+        .bento-box::before {
+            content: ''; position: absolute; inset: 0;
+            border-radius: 20px; padding: 2px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent, rgba(255,255,255,0.05));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor; pointer-events: none;
+        }
+
+        /* 3D Hover Effect applied via JS */
+        .bento-box:hover {
+            border-color: var(--primary);
+            box-shadow: var(--glow), 0 20px 40px rgba(0,0,0,0.5);
+            background: rgba(255,255,255,0.02);
+            z-index: 20;
+        }
+
+        /* Spans */
+        .span-12 { grid-column: span 12; }
+        .span-8 { grid-column: span 8; }
+        .span-6 { grid-column: span 6; }
+        .span-5 { grid-column: span 5; }
+        .span-7 { grid-column: span 7; }
+        .span-4 { grid-column: span 4; }
+        .span-3 { grid-column: span 3; }
+        .row-span-2 { grid-row: span 2; }
+        .row-span-3 { grid-row: span 3; }
+
+        /* =========================================
+           CONTENT STYLES
+        ========================================= */
+        h1.hero-title {
+            font-family: var(--font-display);
+            font-size: 4.5rem; font-weight: 800; line-height: 1.05;
+            letter-spacing: -2px; margin-bottom: 20px;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .text-gradient {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        
+        h3.box-title {
+            font-family: var(--font-display); font-size: 1.6rem;
+            display: flex; align-items: center; gap: 15px; margin-bottom: 25px;
+        }
+        h3.box-title i {
+            font-size: 1.4rem; color: var(--bg-color); background: var(--primary);
+            padding: 10px; border-radius: 12px; box-shadow: 0 0 15px var(--primary);
+        }
+
+        p { color: var(--text-muted); font-size: 1.1rem; line-height: 1.8; }
+        strong { color: #fff; font-weight: 600; }
+
+        /* Animated Numbers */
+        .stat-group { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; height: 100%;}
+        .stat-num {
+            font-family: var(--font-display); font-size: 4rem; font-weight: 800;
+            background: linear-gradient(to bottom, #fff, var(--primary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            line-height: 1; margin-bottom: 10px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));
+        }
+
+        /* Avatar Container */
+        .avatar-wrapper {
+            position: relative; width: 100%; height: 100%; min-height: 350px;
+            border-radius: 16px; overflow: hidden;
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.8);
+        }
+        .avatar-wrapper img {
+            width: 100%; height: 100%; object-fit: cover;
+            /* Đảm bảo không mất mặt khi cắt ảnh */
+            object-position: top center; 
+            filter: contrast(1.1) brightness(0.9); transition: 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .bento-box:hover .avatar-wrapper img { transform: scale(1.05); filter: contrast(1.2) brightness(1.1); }
+        .avatar-wrapper::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 50%);
+        }
+
+        /* Timeline WOW */
+        .timeline { position: relative; border-left: 2px dashed rgba(255,255,255,0.1); padding-left: 30px; margin-left: 10px; }
+        .tl-item { margin-bottom: 40px; position: relative; }
+        .tl-item::before {
+            content: ''; position: absolute; left: -38px; top: 5px;
+            width: 14px; height: 14px; background: var(--primary);
+            border-radius: 50%; box-shadow: 0 0 15px var(--primary);
+            transition: 0.3s;
+        }
+        .bento-box:hover .tl-item::before { transform: scale(1.5); }
+        .tl-date { color: var(--primary); font-family: var(--font-display); font-weight: 700; letter-spacing: 1px; margin-bottom: 5px; }
+        .tl-title { font-size: 1.3rem; font-weight: 700; color: #fff; margin-bottom: 10px; }
+
+        /* Images Grid inside Box */
+        .gallery-mini { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; height: 100%; }
+        
+        /* 
+           FIX ẢNH CẮT TÙM LUM: Sử dụng Aspect Ratio thay vì Height cố định
+           để hộp chứa ảnh tự động co giãn theo tỷ lệ vàng. 
+        */
+        .img-card { 
+            position: relative; border-radius: 12px; overflow: hidden; 
+            width: 100%; 
+        }
+        /* Các tỷ lệ khung hình */
+        .ratio-16-9 { aspect-ratio: 16/9; }
+        .ratio-21-9 { aspect-ratio: 21/9; }
+        .ratio-4-3 { aspect-ratio: 4/3; }
+        .ratio-1-1 { aspect-ratio: 1/1; }
+        
+        .img-card img { 
+            width: 100%; height: 100%; object-fit: cover; transition: 0.5s; filter: grayscale(30%); 
+            /* Focus vào top center để tránh mất đầu người trong ảnh */
+            object-position: top center; 
+        }
+        .img-card:hover img { transform: scale(1.1) rotate(2deg); filter: grayscale(0%); }
+        .img-caption {
+            position: absolute; bottom: 0; left: 0; width: 100%; padding: 20px 15px;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            transform: translateY(20px); opacity: 0; transition: 0.4s;
+            font-family: var(--font-display); font-weight: 600; font-size: 1rem; color: #fff;
+        }
+        .img-card:hover .img-caption { transform: translateY(0); opacity: 1; }
+
+        /* Progress / Skill Bars */
+        .skill-item { margin-bottom: 20px; }
+        .skill-header { display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: 600; }
+        .skill-track { width: 100%; height: 6px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; position: relative;}
+        .skill-fill {
+            height: 100%; width: 0; border-radius: 10px;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            box-shadow: 0 0 10px var(--primary); transition: width 2s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        /* Marquee Tags */
+        .marquee-container { overflow: hidden; white-space: nowrap; margin-top: auto; padding-top: 20px; mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);}
+        .marquee-content { display: inline-block; animation: marquee 15s linear infinite; }
+        .marquee-tag {
+            display: inline-block; padding: 10px 20px; margin-right: 15px;
+            border-radius: 30px; border: 1px solid var(--border);
+            background: rgba(255,255,255,0.02); color: #fff; font-family: var(--font-display); font-weight: 500;
+        }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .span-8, .span-6, .span-5, .span-7, .span-4, .span-3 { grid-column: span 6; }
+            h1.hero-title { font-size: 3.5rem; }
+        }
+        @media (max-width: 768px) {
+            .bento-grid { display: flex; flex-direction: column; }
+            .bento-box { padding: 25px; }
+            h1.hero-title { font-size: 2.5rem; }
+            .avatar-wrapper { min-height: 250px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Ambient Background Effects -->
+    <div class="noise-overlay"></div>
+    <div class="ambient-light"></div>
+
+    <!-- Custom Cursor -->
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <!-- Navbar -->
+    <nav>
+        <div class="logo">NNTH<span>_</span></div>
+        <button class="cyber-btn" onclick="toggleMode()">
+            <span id="btn-text">System.Init(Nội Tâm)</span>
+        </button>
+    </nav>
+
+    <div class="wrapper">
+        
+        <!-- =======================================================================
+             VIEW 1: ACADEMIC (CHUYÊN MÔN - WOW FACTOR)
+             ======================================================================= -->
+        <div id="view-academic" class="cv-view active">
+            <div class="bento-grid">
+                
+                <!-- Main Intro -->
+                <div class="bento-box span-8 row-span-2 js-tilt">
+                    <p style="font-family: var(--font-mono); color: var(--primary); margin-bottom: 10px; letter-spacing: 2px;">> THÔNG TIN ĐỊNH DANH</p>
+                    <h1 class="hero-title">Kiến Tạo Tư Duy<br><span class="text-gradient">Nguyễn Nhất Trung Hậu</span></h1>
+                    <p style="font-size: 1.25rem; color: #fff; margin-bottom: 20px; font-weight: 500;">
+                        Giáo viên Toán học đột phá tại THCS & THPT Phú Thành A.
+                    </p>
+                    <p style="margin-bottom: 20px;">
+                        Đập tan định kiến về một môn Toán khô khan. Tôi mang tư duy của thế hệ GenZ vào bục giảng, tiên phong tích hợp <strong>Trí Tuệ Nhân Tạo (AI)</strong> và <strong>Công Nghệ Giáo Dục (EdTech)</strong> để kiến tạo một môi trường học tập tương tác, kích thích tư duy phản biện và năng lực giải quyết vấn đề của học sinh.
+                    </p>
+                    <div style="display: flex; gap: 15px; margin-top: auto;">
+                        <a href="mailto:nnth2107@gmail.com" class="cyber-btn" style="text-decoration:none; padding: 10px 20px; font-size: 0.9rem;"><i class="fas fa-envelope"></i> Kết nối ngay</a>
+                        <span class="cyber-btn" style="border: 1px solid rgba(255,255,255,0.2); color: #fff; cursor: default;"><i class="fas fa-phone"></i> 0971.738.655</span>
+                    </div>
+                </div>
+
+                <!-- Avatar -->
+                <div class="bento-box span-4 row-span-2 js-tilt" style="padding: 10px;">
+                    <div class="avatar-wrapper">
+                        <img src="anh-dai-dien.JPG" alt="Trung Hậu Academic" onerror="this.src='https://via.placeholder.com/400x600/0f172a/00f0ff?text=Educator'">
+                    </div>
+                </div>
+
+                <!-- WOW Stats -->
+                <div class="bento-box span-3 js-tilt stat-group">
+                    <div class="stat-num counter" data-target="500">0</div>
+                    <p style="font-weight: 700; color: #fff; font-size: 1.1rem; text-transform: uppercase;">Học sinh</p>
+                    <p style="font-size: 0.9rem;">Được truyền cảm hứng</p>
+                </div>
+                
+                <div class="bento-box span-3 js-tilt stat-group">
+                    <div class="stat-num counter" data-target="100">0</div>
+                    <span style="font-family: var(--font-display); font-size: 2rem; color: var(--primary); font-weight:800; position:absolute; top:35px; right: 40px;">%</span>
+                    <p style="font-weight: 700; color: #fff; font-size: 1.1rem; text-transform: uppercase;">Tâm Huyết</p>
+                    <p style="font-size: 0.9rem;">Dành cho giáo dục STEM</p>
+                </div>
+
+                <!-- Skills -->
+                <div class="bento-box span-6 js-tilt">
+                    <h3 class="box-title"><i class="fas fa-microchip"></i> Hệ Sinh Thái Kỹ Năng</h3>
+                    <div class="skill-item">
+                        <div class="skill-header"><span>Hệ thống EdTech (Vietschool, OLM, Trắc nghiệm)</span><span class="text-gradient">Đỉnh cao</span></div>
+                        <div class="skill-track"><div class="skill-fill" data-width="95%"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-header"><span>Tích hợp AI (Gemini, ChatGPT, TEMIS)</span><span class="text-gradient">Nâng cao</span></div>
+                        <div class="skill-track"><div class="skill-fill" data-width="90%"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-header"><span>Tư duy Toán học & Sư phạm</span><span class="text-gradient">Chuyên gia</span></div>
+                        <div class="skill-track"><div class="skill-fill" data-width="98%"></div></div>
+                    </div>
+                </div>
+
+                <!-- Epic Timeline -->
+                <div class="bento-box span-6 row-span-2 js-tilt">
+                    <h3 class="box-title"><i class="fas fa-rocket"></i> Dấu Ấn Chuyên Môn</h3>
+                    <div class="timeline">
+                        <div class="tl-item">
+                            <div class="tl-date">Năm học 2025 - 2026</div>
+                            <div class="tl-title">Chuyên Gia Khảo Thí & Cốt Cán</div>
+                            <p>Được tín nhiệm vai trò Giám thị Hội đồng coi thi chọn Học sinh giỏi cấp tỉnh. Hoàn thành xuất sắc bộ tiêu chí đánh giá Giáo viên dạy giỏi, GVCN giỏi cấp tỉnh (10/2025). Tổ chức thành công Trại Xuân 2026 rực rỡ.</p>
+                        </div>
+                        <div class="tl-item">
+                            <div class="tl-date">Năm học 2024 - 2025</div>
+                            <div class="tl-title">Kẻ Thách Thức Giới Hạn</div>
+                            <p>Tạo tiếng vang tại Cuộc thi Sáng tạo Kỹ thuật tỉnh Đồng Tháp (lần thứ 18). Liên tục đóng góp, số hóa hệ thống ngân hàng đề thi chung của Tỉnh qua hạ tầng đám mây dùng chung.</p>
+                        </div>
+                        <div class="tl-item">
+                            <div class="tl-date">Khởi Nguyên</div>
+                            <div class="tl-title">Gia nhập THCS & THPT Phú Thành A</div>
+                            <p>Chính thức mang ngọn lửa nhiệt huyết thắp sáng bục giảng bộ môn Toán. Áp dụng giáo dục bảo vệ môi trường, biến đổi khí hậu vào bài dạy.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gallery Academic -->
+                <div class="bento-box span-6 row-span-2 js-tilt">
+                    <h3 class="box-title"><i class="fas fa-camera"></i> Hiện Thực Hóa Tầm Nhìn</h3>
+                    <div class="gallery-mini">
+                        <div class="img-card ratio-21-9" style="grid-column: span 2;">
+                            <img src="trai-xuan-2026.jpg" alt="Trại Xuân 2026">
+                            <div class="img-caption">Bùng cháy sức trẻ: Cắm trại Xuân 2026 cùng 11C1</div>
+                        </div>
+                        <div class="img-card ratio-4-3">
+                            <img src="gacthi1.jpg" alt="Gác thi HSG">
+                            <div class="img-caption">Minh bạch: Coi thi HSG Tỉnh</div>
+                        </div>
+                        <div class="img-card ratio-4-3">
+                            <img src="gacthi2.jpg" alt="Đồng nghiệp">
+                            <div class="img-caption">Đồng đội sát cánh</div>
+                        </div>
+                        <div class="img-card ratio-4-3">
+                            <img src="ngay-8-3.jpg" alt="Ngày 8/3">
+                            <div class="img-caption">Kỷ niệm Tổ Toán 8/3</div>
+                        </div>
+                        <div class="img-card ratio-4-3">
+                            <img src="cuoinam.jpg" alt="Tổng kết">
+                            <div class="img-caption">Nụ cười ngày bế giảng</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Marquee Tags -->
+                <div class="bento-box span-12 js-tilt" style="padding: 20px;">
+                    <div class="marquee-container">
+                        <div class="marquee-content">
+                            <span class="marquee-tag">#GiaoVienToan</span>
+                            <span class="marquee-tag">#GenZEducator</span>
+                            <span class="marquee-tag">#EdTech</span>
+                            <span class="marquee-tag">#AI_in_Education</span>
+                            <span class="marquee-tag">#STEM</span>
+                            <span class="marquee-tag">#SangTaoKyThuat</span>
+                            <span class="marquee-tag">#DongThap</span>
+                            <span class="marquee-tag">#GoogleWorkspace</span>
+                            <!-- Duplicate for seamless loop -->
+                            <span class="marquee-tag">#GiaoVienToan</span>
+                            <span class="marquee-tag">#GenZEducator</span>
+                            <span class="marquee-tag">#EdTech</span>
+                            <span class="marquee-tag">#AI_in_Education</span>
+                            <span class="marquee-tag">#STEM</span>
+                            <span class="marquee-tag">#SangTaoKyThuat</span>
+                            <span class="marquee-tag">#DongThap</span>
+                            <span class="marquee-tag">#GoogleWorkspace</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- =======================================================================
+             VIEW 2: PERSONAL (NỘI TÂM - WOW FACTOR)
+             ======================================================================= -->
+        <div id="view-personal" class="cv-view">
+            <div class="bento-grid">
+                
+                <!-- Main Intro -->
+                <div class="bento-box span-8 row-span-2 js-tilt">
+                    <p style="font-family: var(--font-mono); color: var(--primary); margin-bottom: 10px; letter-spacing: 2px;">> SYSTEM.OVERRIDE(EMOTIONS)</p>
+                    <h1 class="hero-title">Kẻ Mộng Mơ<br><span class="text-gradient">Du Hành Giữa Thực & Ảo</span></h1>
+                    
+                    <div style="padding-left: 20px; border-left: 4px solid var(--primary); margin: 25px 0;">
+                        <p style="font-size: 1.3rem; font-style: italic; color: #fff;">
+                            "Một linh hồn lãng mạn bị trói chặt vào một thân xác khổ sở vì tình."
+                        </p>
+                    </div>
+
+                    <p style="font-size: 1.15rem; margin-bottom: 20px;">
+                        Gỡ bỏ lớp vỏ bọc hoàn hảo của một nhà giáo, tôi trở về là một bản ngã đầy mâu thuẫn. Tôi khát khao sự tự do tuyệt đối trong thế giới ảo, tôi đắm mình vào những triết lý nhân sinh tàn khốc, nhưng sâu thẳm bên trong, tôi khao khát được chữa lành và một chốn bình yên không phán xét.
+                    </p>
+                    <p>
+                        Tôi là những chuỗi ngày rong ruổi trong tâm trí, là những giấc ngủ vùi để trốn tránh thế gian, và là những khoảng lặng chỉ dành cho riêng mình.
+                    </p>
+                </div>
+
+                <!-- Avatar -->
+                <div class="bento-box span-4 row-span-2 js-tilt" style="padding: 10px;">
+                    <div class="avatar-wrapper">
+                        <!-- Sử dụng object-position: top center để luôn lấy khuôn mặt -->
+                        <img src="ANH-CA-NHAN-CS.jpg" alt="Trung Hậu Personal" style="object-position: top center;" onerror="this.src='canhan2.png'; this.onerror=null;">
+                    </div>
+                </div>
+
+                <!-- Virtual World -->
+                <div class="bento-box span-6 row-span-2 js-tilt">
+                    <h3 class="box-title"><i class="fas fa-gamepad"></i> Đế Chế Ảo (Gaming)</h3>
+                    <p style="margin-bottom: 20px;">Nơi thực tại nhường bước cho kỹ năng, tốc độ phản xạ và tư duy chiến thuật đỉnh cao. Tôi không chơi game để giết thời gian, tôi chơi để khẳng định cái tôi kiến tạo và chinh phục.</p>
+                    
+                    <div class="skill-item">
+                        <div class="skill-header"><span>Tư duy & Phản xạ (Liên Quân Mobile)</span><span class="text-gradient">Thách Đấu</span></div>
+                        <div class="skill-track"><div class="skill-fill" data-width="99%"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-header"><span>Chiến thuật (Võ Lâm, Hero Clash)</span><span class="text-gradient">Bậc Thầy</span></div>
+                        <div class="skill-track"><div class="skill-fill" data-width="85%"></div></div>
+                    </div>
+
+                    <!-- Sử dụng class chia tỷ lệ để ảnh không bị cắt lung tung -->
+                    <div class="img-card ratio-21-9" style="margin-top: 25px;">
+                        <img src="lien-quan.jpg" alt="Liên Quân" style="object-position: center;">
+                        <div class="img-caption">Đấu trường danh vọng - Nơi kỹ năng lên tiếng</div>
+                    </div>
+                </div>
+
+                <!-- Anime / Tiên Nghịch -->
+                <div class="bento-box span-6 row-span-2 js-tilt">
+                    <h3 class="box-title"><i class="fas fa-dragon"></i> Nghịch Thiên Cải Mệnh</h3>
+                    <p style="margin-bottom: 20px;">
+                        Đam mê mãnh liệt thế giới hoạt hình 3D (Donghua), đặc biệt là tuyệt tác <strong>Tiên Nghịch</strong>. <br><br>
+                        Hành trình của Vương Lâm không chỉ là phim ảnh, nó là một hệ tư tưởng. Ý chí vượt qua cái chết, đối mặt với sự tàn khốc của vạn vật để tự mình định đoạt số phận đã xoa dịu những góc tối bế tắc nhất trong nội tâm tôi.
+                    </p>
+                    <div class="img-card ratio-16-9" style="margin-top: auto;">
+                        <img src="tien-nghich.jpg" alt="Tiên Nghịch" style="object-position: top center;">
+                        <div class="img-caption">Tiên Nghịch: Sống để làm chủ vận mệnh</div>
+                    </div>
+                </div>
+
+                <!-- Poetry -->
+                <div class="bento-box span-5 row-span-2 js-tilt">
+                    <h3 class="box-title"><i class="fas fa-feather-alt"></i> Vũ Trụ Ngôn Từ Gai Góc</h3>
+                    <p style="margin-bottom: 20px;">
+                        Tôi nhặt nhạnh từng vần thơ của <strong>Chế Lan Viên</strong> để xây dựng một thế giới quan riêng. <br><br>
+                        Cụ viết lãng mạn vô ngần nhưng cũng sắc lạnh như dao. Tôi si mê những triết lý ấy, nhưng thẳm sâu lại mang một nỗi sợ hãi mơ hồ khi đối diện với sự thật trần trụi về tình yêu và sự cô độc mà thơ cụ lột tả. Đọc để rỉ máu, và đọc để tự chữa lành.
+                    </p>
+                    <div class="img-card ratio-16-9" style="margin-top: 20px;">
+                        <img src="che-lan-vien.jpg" alt="Chế Lan Viên" style="object-position: center;">
+                        <div class="img-caption">Góc suy nghiệm thi ca</div>
+                    </div>
+                </div>
+
+                <!-- Zen / Chữa Lành -->
+                <div class="bento-box span-7 row-span-2 js-tilt">
+                    <h3 class="box-title"><i class="fas fa-yin-yang"></i> Điểm Tựa Linh Hồn</h3>
+                    <div style="display: flex; flex-direction: column; gap: 20px; height: 100%;">
+                        <p>
+                            Tôi trốn chạy khỏi nhịp sống điên cuồng bằng việc tìm về sự uy nghiêm nơi <strong>cửa Phật</strong>. Khói nhang và tiếng chuông chùa là liều thuốc duy nhất dập tắt những cơn bão ngầm trong ngực.
+                        </p>
+                        <p>
+                            Và đôi khi, tôi thả lỏng bản thân trong rạp <strong>chiếu phim</strong> cùng những người bạn tri kỷ hiếm hoi. Không cần nói nhiều, chỉ cần được ngồi cạnh những người thấu hiểu là đủ.
+                        </p>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: auto;">
+                            <!-- Đặt tỷ lệ vuông (1:1) để 2 ảnh nằm đẹp cạnh nhau -->
+                            <div class="img-card ratio-1-1">
+                                <img src="dichua.jpg" alt="Đi chùa" style="object-position: top center;">
+                                <div class="img-caption">Thanh tẩy tâm hồn</div>
+                            </div>
+                            <div class="img-card ratio-1-1">
+                                <img src="xemphim.jpg" alt="Xem phim" style="object-position: center;">
+                                <div class="img-caption">Khoảnh khắc bạn bè</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ==========================================================================
+         JAVASCRIPT / INTERACTIVITY
+         ========================================================================== -->
+    <script>
+        // Custom Cursor Logic
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorOutline = document.querySelector('.cursor-outline');
+        
+        window.addEventListener('mousemove', function(e) {
+            const posX = e.clientX;
+            const posY = e.clientY;
+            
+            cursorDot.style.left = `${posX}px`;
+            cursorDot.style.top = `${posY}px`;
+            
+            cursorOutline.animate({
+                left: `${posX}px`,
+                top: `${posY}px`
+            }, { duration: 500, fill: "forwards" });
+        });
+
+        // Hover effect for cursor
+        document.querySelectorAll('a, button, .bento-box, .img-card').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursorOutline.style.transform = 'translate(-50%, -50%) scale(1.5)';
+                cursorOutline.style.backgroundColor = 'rgba(255,255,255,0.1)';
+            });
+            el.addEventListener('mouseleave', () => {
+                cursorOutline.style.transform = 'translate(-50%, -50%) scale(1)';
+                cursorOutline.style.backgroundColor = 'transparent';
+            });
+        });
+
+        // 3D Tilt Effect on Bento Boxes
+        const tiltElements = document.querySelectorAll('.js-tilt');
+        tiltElements.forEach(el => {
+            el.addEventListener('mousemove', (e) => {
+                const rect = el.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const xRotation = ((y - rect.height / 2) / rect.height) * -8;
+                const yRotation = ((x - rect.width / 2) / rect.width) * 8;
+                
+                el.style.transform = `perspective(1000px) rotateX(${xRotation}deg) rotateY(${yRotation}deg) scale3d(1.02, 1.02, 1.02)`;
+            });
+            
+            el.addEventListener('mouseleave', () => {
+                el.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+            });
+        });
+
+        // Number Counter Animation
+        function animateCounters() {
+            const counters = document.querySelectorAll('.counter');
+            const speed = 40; 
+
+            counters.forEach(counter => {
+                const updateCount = () => {
+                    const target = +counter.getAttribute('data-target');
+                    const count = +counter.innerText;
+                    const inc = target / speed;
+
+                    if (count < target) {
+                        counter.innerText = Math.ceil(count + inc);
+                        setTimeout(updateCount, 30);
+                    } else {
+                        counter.innerText = target + "+";
+                    }
+                };
+                counter.innerText = '0'; // reset
+                updateCount();
+            });
+        }
+
+        // Fill Progress Bars
+        function animateProgressBars(viewId) {
+            const view = document.getElementById(viewId);
+            const bars = view.querySelectorAll('.skill-fill');
+            bars.forEach(bar => {
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    bar.style.width = bar.getAttribute('data-width');
+                }, 600);
+            });
+        }
+
+        // Bento Box Staggered Entry Animation
+        function animateBentoBoxes(viewId) {
+            const view = document.getElementById(viewId);
+            const boxes = view.querySelectorAll('.bento-box');
+            
+            boxes.forEach(box => {
+                box.classList.remove('show');
+                box.style.opacity = '0';
+                box.style.transform = 'translateY(40px) scale(0.95)';
+            });
+            
+            boxes.forEach((box, index) => {
+                setTimeout(() => {
+                    box.style.opacity = '1';
+                    box.style.transform = 'translateY(0) scale(1)';
+                }, 100 * index);
+            });
+        }
+
+        // Toggle Between Academic and Personal Mode
+        function toggleMode() {
+            const body = document.body;
+            const viewAc = document.getElementById('view-academic');
+            const viewPe = document.getElementById('view-personal');
+            const btnText = document.getElementById('btn-text');
+
+            const isPersonal = body.classList.contains('personal-mode');
+
+            if (isPersonal) {
+                // Switch to Academic
+                body.classList.remove('personal-mode');
+                btnText.innerText = "System.Init(Nội Tâm)";
+
+                viewPe.classList.remove('active');
+                viewAc.classList.add('active');
+                
+                animateBentoBoxes('view-academic');
+                animateProgressBars('view-academic');
+                animateCounters();
+
+            } else {
+                // Switch to Personal
+                body.classList.add('personal-mode');
+                btnText.innerText = "System.Init(Học Thuật)";
+
+                viewAc.classList.remove('active');
+                viewPe.classList.add('active');
+                
+                animateBentoBoxes('view-personal');
+                animateProgressBars('view-personal');
+            }
+        }
+
+        // Initial Initialization on Page Load
+        document.addEventListener("DOMContentLoaded", () => {
+            animateBentoBoxes('view-academic');
+            animateProgressBars('view-academic');
+            animateCounters();
+        });
+    </script>
+</body>
+</html>
