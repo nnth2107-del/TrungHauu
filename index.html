@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hồ Sơ Không Gian - Nguyễn Nhất Trung Hậu</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ==========================================================================
+           WOW FACTOR VARIABLES & THEMING
+           ========================================================================== */
+        :root {
+            /* Global */
+            --font-main: 'Outfit', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-highlight: rgba(255, 255, 255, 0.15);
+            
+            /* Academic Theme (Cyber Blue) */
+            --bg-color-ac: #030712; /* ultra dark blue */
+            --primary-ac: #00f2fe;
+            --secondary-ac: #4facfe;
+            --primary-rgb-ac: 0, 242, 254;
+            --glow-ac: 0 0 20px rgba(0, 242, 254, 0.4), 0 0 40px rgba(79, 172, 254, 0.2);
+            --gradient-ac: linear-gradient(135deg, var(--primary-ac), var(--secondary-ac));
+
+            /* Personal Theme (Neon Emerald & Amethyst) */
+            --bg-color-pe: #021f15; /* deep dark emerald */
+            --primary-pe: #10b981;
+            --secondary-pe: #8b5cf6;
+            --primary-rgb-pe: 16, 185, 129;
+            --glow-pe: 0 0 20px rgba(16, 185, 129, 0.4), 0 0 40px rgba(139, 92, 246, 0.2);
+            --gradient-pe: linear-gradient(135deg, var(--primary-pe), var(--secondary-pe));
+
+            /* Active State Variables (Managed by JS/CSS Toggle) */
+            --bg-color: var(--bg-color-ac);
+            --primary: var(--primary-ac);
+            --secondary: var(--secondary-ac);
+            --primary-rgb: var(--primary-rgb-ac);
+            --glow: var(--glow-ac);
+            --gradient: var(--gradient-ac);
+        }
+
+        body.personal-mode {
+            --bg-color: var(--bg-color-pe);
+            --primary: var(--primary-pe);
+            --secondary: var(--secondary-pe);
+            --primary-rgb: var(--primary-rgb-pe);
+            --glow: var(--glow-pe);
+            --gradient: var(--gradient-pe);
+        }
+
+        /* ==========================================================================
+           RESET & BASE
+           ========================================================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.8s ease, border-color 0.5s ease;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* ==========================================================================
+           ANIMATED BACKGROUND (WOW FACTOR)
+           ========================================================================== */
+        .bg-animations {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: float 20s infinite ease-in-out alternate;
+        }
+        .orb-1 {
+            width: 400px; height: 400px;
+            background: var(--primary);
+            top: -10%; left: -10%;
+            animation-delay: 0s;
+        }
+        .orb-2 {
+            width: 500px; height: 500px;
+            background: var(--secondary);
+            bottom: -20%; right: -10%;
+            animation-delay: -5s;
+        }
+        .orb-3 {
+            width: 300px; height: 300px;
+            background: var(--primary);
+            top: 40%; left: 50%;
+            opacity: 0.2;
+            animation-delay: -10s;
+        }
+
+        /* Grid overlay */
+        .bg-grid {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+            -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0, 0) scale(1); }
+        }
+
+        /* ==========================================================================
+           NAVIGATION & TOGGLE
+           ========================================================================== */
+        nav {
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            padding: 20px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        /* The Magic Switch */
+        .switch-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: var(--glass-bg);
+            padding: 8px 15px;
+            border-radius: 50px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .switch-label {
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 30px;
+            cursor: pointer;
+            border: 1px solid var(--glass-border);
+        }
+        .switch-handle {
+            position: absolute;
+            top: 3px; left: 3px;
+            width: 22px; height: 22px;
+            background: var(--gradient);
+            border-radius: 50%;
+            transition: 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: var(--glow);
+            display: flex; justify-content: center; align-items: center;
+        }
+        .switch-handle i { font-size: 10px; color: #fff; }
+        body.personal-mode .switch-handle {
+            left: calc(100% - 25px);
+        }
+
+        /* ==========================================================================
+           BENTO GRID LAYOUT
+           ========================================================================== */
+        .main-content {
+            max-width: 1600px;
+            margin: 120px auto 50px auto;
+            padding: 0 5%;
+        }
+
+        .cv-view {
+            display: none;
+        }
+        .cv-view.active {
+            display: block;
+        }
+
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(120px, auto);
+            gap: 20px;
+        }
+
+        .bento-box {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 35px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            
+            /* Entry Animation Base */
+            opacity: 0;
+            transform: translateY(40px) scale(0.95);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                        box-shadow 0.4s ease, 
+                        border-color 0.4s ease,
+                        opacity 0.6s ease;
+        }
+
+        /* Show animation class applied via JS */
+        .bento-box.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        /* 3D Hover Effect */
+        .bento-box:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: rgba(var(--primary-rgb), 0.4);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5), var(--glow);
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        /* Grid Spans */
+        .span-12 { grid-column: span 12; }
+        .span-8 { grid-column: span 8; }
+        .span-7 { grid-column: span 7; }
+        .span-6 { grid-column: span 6; }
+        .span-5 { grid-column: span 5; }
+        .span-4 { grid-column: span 4; }
+        .span-3 { grid-column: span 3; }
+        .row-span-2 { grid-row: span 2; }
+        .row-span-3 { grid-row: span 3; }
+
+        /* ==========================================================================
+           TYPOGRAPHY & COMPONENTS
+           ========================================================================== */
+        h1.hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 15px;
+        }
+        .gradient-text {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+        
+        .typewriter {
+            font-family: var(--font-mono);
+            color: var(--primary);
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+            display: inline-block;
+            overflow: hidden;
+            white-space: nowrap;
+            border-right: 3px solid var(--primary);
+            animation: typing 3s steps(40, end), blink-caret .75s step-end infinite;
+        }
+        @keyframes typing { from { width: 0 } to { width: 100% } }
+        @keyframes blink-caret { from, to { border-color: transparent } 50% { border-color: var(--primary); } }
+
+        p { color: var(--text-muted); font-size: 1.05rem; line-height: 1.7; }
+        
+        h3.box-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex; align-items: center; gap: 12px;
+            color: #fff;
+        }
+        h3.box-title i {
+            color: var(--primary);
+            background: rgba(var(--primary-rgb), 0.1);
+            padding: 10px;
+            border-radius: 12px;
+            font-size: 1.2rem;
+        }
+
+        /* Avatar Container */
+        .avatar-container {
+            width: 100%; height: 100%;
+            min-height: 300px;
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        .avatar-container img {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: 0.5s;
+        }
+        .bento-box:hover .avatar-container img {
+            transform: scale(1.05);
+        }
+        
+        /* Spinning Border for Avatar */
+        .avatar-wrapper {
+            position: relative;
+            padding: 6px;
+            border-radius: 24px;
+            background: linear-gradient(var(--bg-color), var(--bg-color)) padding-box,
+                        conic-gradient(from var(--angle), var(--primary), var(--secondary), var(--primary)) border-box;
+            border: 2px solid transparent;
+            animation: spinBg 4s linear infinite;
+            height: 100%; display: flex; flex-direction: column;
+        }
+        @property --angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+        @keyframes spinBg { to { --angle: 360deg; } }
+
+        /* Tags */
+        .tag-list { display: flex; flex-wrap: wrap; gap: 12px; margin-top: auto; padding-top: 20px; }
+        .tag {
+            padding: 8px 16px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--glass-border);
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            color: #e2e8f0;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .tag i { color: var(--primary); }
+
+        /* Custom Timeline */
+        .custom-timeline {
+            position: relative;
+            padding-left: 30px;
+            margin-top: 10px;
+        }
+        .custom-timeline::before {
+            content: ''; position: absolute;
+            left: 0; top: 0; bottom: 0; width: 2px;
+            background: linear-gradient(to bottom, var(--primary), transparent);
+        }
+        .tl-item { position: relative; margin-bottom: 25px; }
+        .tl-item::before {
+            content: ''; position: absolute;
+            left: -35px; top: 6px; width: 12px; height: 12px;
+            border-radius: 50%; background: var(--bg-color);
+            border: 2px solid var(--primary);
+            box-shadow: 0 0 10px var(--primary);
+            transition: 0.3s;
+        }
+        .bento-box:hover .tl-item::before { background: var(--primary); }
+        .tl-date { font-family: var(--font-mono); color: var(--primary); font-size: 0.85rem; margin-bottom: 5px; }
+        .tl-title { font-weight: 700; color: #fff; font-size: 1.1rem; margin-bottom: 5px;}
+
+        /* Image Gallery within Bento */
+        .img-card {
+            border-radius: 16px; overflow: hidden; position: relative;
+            flex: 1; min-height: 150px;
+        }
+        .img-card img {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: 0.5s ease; filter: brightness(0.8);
+        }
+        .img-card:hover img { filter: brightness(1.1); transform: scale(1.08); }
+        .img-label {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            padding: 15px;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            color: #fff; font-weight: 600; font-size: 0.95rem;
+            transform: translateY(100%); transition: 0.3s ease;
+        }
+        .img-card:hover .img-label { transform: translateY(0); }
+
+        /* Progress Bars */
+        .skill-row { margin-bottom: 15px; }
+        .skill-name { display: flex; justify-content: space-between; margin-bottom: 5px; font-weight: 500; font-size: 0.95rem;}
+        .skill-bar { width: 100%; height: 8px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; }
+        .skill-fill { height: 100%; background: var(--gradient); box-shadow: var(--glow); width: 0; transition: width 1.5s ease-out; }
+
+        /* Quotes */
+        .quote-mark { font-size: 3rem; color: var(--primary); opacity: 0.3; position: absolute; top: 20px; left: 20px; }
+        .quote-text { font-size: 1.4rem; font-style: italic; color: #fff; position: relative; z-index: 1; line-height: 1.5; padding: 20px; text-align: center; margin: auto;}
+
+        /* Stat numbers */
+        .big-stat { font-size: 3.5rem; font-weight: 900; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1;}
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .span-8, .span-7, .span-6, .span-5, .span-4, .span-3 { grid-column: span 6; }
+            .row-span-3 { grid-row: span 2; }
+        }
+        @media (max-width: 768px) {
+            .bento-grid { grid-template-columns: 1fr; }
+            .span-8, .span-7, .span-6, .span-5, .span-4, .span-3, .span-12 { grid-column: span 1; }
+            h1.hero-title { font-size: 2.5rem; }
+            .main-content { margin-top: 100px; }
+            .bento-box { padding: 25px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Animated Background -->
+    <div class="bg-animations">
+        <div class="bg-grid"></div>
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">
+            <i class="fas fa-cube"></i> NNTH.cv
+        </div>
+        <div class="switch-container">
+            <span class="switch-label" id="mode-text">Học Thuật</span>
+            <div class="switch" onclick="toggleMode()">
+                <div class="switch-handle"><i class="fas fa-bolt"></i></div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-content">
+
+        <!-- ==========================================================================
+             VIEW: ACADEMIC (CHUYÊN MÔN)
+             ========================================================================== -->
+        <div id="view-academic" class="cv-view active">
+            <div class="bento-grid">
+                
+                <!-- Hero & Intro -->
+                <div class="bento-box span-8 row-span-2">
+                    <div class="typewriter">./init_academic_profile.exe</div>
+                    <h1 class="hero-title">Nguyễn Nhất<br><span class="gradient-text">Trung Hậu</span></h1>
+                    <p style="font-size: 1.2rem; color: #fff; font-weight: 500; margin-bottom: 15px;">Giáo viên Toán học @ THCS & THPT Phú Thành A</p>
+                    <p>
+                        Mang tư duy của thế hệ GenZ vào môi trường sư phạm truyền thống. 
+                        Tôi đam mê tích hợp Công nghệ Giáo dục (EdTech) và Trí tuệ nhân tạo (AI) vào việc giảng dạy, 
+                        với mục tiêu tối thượng là xây dựng môi trường học tập hiện đại, đánh thức tư duy logic và khả năng phản biện của học sinh qua lăng kính Toán học & STEM.
+                    </p>
+                    <div class="tag-list">
+                        <span class="tag"><i class="fas fa-phone"></i> 0971.738.655</span>
+                        <span class="tag"><i class="fas fa-envelope"></i> nnth2107@gmail.com</span>
+                        <span class="tag"><i class="fas fa-map-marker-alt"></i> Đồng Tháp, VN</span>
+                    </div>
+                </div>
+
+                <!-- Avatar -->
+                <div class="bento-box span-4 row-span-2" style="padding: 0; background: transparent; border: none; box-shadow: none;">
+                    <div class="avatar-wrapper">
+                        <div class="avatar-container">
+                            <img src="anh-dai-dien.JPG" alt="Trung Hậu" onerror="this.src='https://via.placeholder.com/400x500?text=Avatar+Toan+Hoc'">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Expertise Stats -->
+                <div class="bento-box span-3">
+                    <i class="fas fa-chart-line" style="font-size: 2rem; color: var(--primary); margin-bottom: 10px;"></i>
+                    <div class="big-stat">95%</div>
+                    <p style="margin-top: 10px; font-weight: 600; color: #fff;">Chuyên môn Toán</p>
+                    <p style="font-size: 0.9rem;">Vững vàng kiến thức, linh hoạt phương pháp.</p>
+                </div>
+
+                <div class="bento-box span-5">
+                    <h3 class="box-title"><i class="fas fa-microchip"></i> Nền Tảng Công Nghệ</h3>
+                    <div class="skill-row">
+                        <div class="skill-name"><span>Vietschool / OLM / Trắc Nghiệm Online</span><span class="mono-text">90%</span></div>
+                        <div class="skill-bar"><div class="skill-fill" data-width="90%"></div></div>
+                    </div>
+                    <div class="skill-row" style="margin-bottom: 0;">
+                        <div class="skill-name"><span>Google Classroom & Office 365</span><span class="mono-text">95%</span></div>
+                        <div class="skill-bar"><div class="skill-fill" data-width="95%"></div></div>
+                    </div>
+                </div>
+
+                <!-- AI Integration -->
+                <div class="bento-box span-4">
+                    <h3 class="box-title"><i class="fas fa-brain"></i> Ứng dụng AI</h3>
+                    <p>Tiên phong ứng dụng AI để tối ưu hóa quản lý và biên soạn giáo án.</p>
+                    <div class="tag-list" style="padding-top: 15px;">
+                        <span class="tag"><i class="fas fa-robot"></i> Gemini</span>
+                        <span class="tag"><i class="fas fa-comment-dots"></i> ChatGPT</span>
+                        <span class="tag"><i class="fas fa-cogs"></i> TEMIS</span>
+                    </div>
+                </div>
+
+                <!-- Timeline -->
+                <div class="bento-box span-6 row-span-2">
+                    <h3 class="box-title"><i class="fas fa-route"></i> Hành Trình Công Tác</h3>
+                    <div class="custom-timeline">
+                        <div class="tl-item">
+                            <div class="tl-date">02/2025 - Hiện tại</div>
+                            <div class="tl-title">Giáo viên Toán - THCS & THPT Phú Thành A</div>
+                            <p>Đứng lớp bộ môn Toán. Tổ chức thành công các phong trào ngoại khóa như Cắm trại Xuân 2026, kỷ niệm 8/3.</p>
+                        </div>
+                        <div class="tl-item">
+                            <div class="tl-date">Năm học 2025 - 2026</div>
+                            <div class="tl-title">Công tác Khảo thí & Chuyên môn</div>
+                            <p>Hoàn thành xuất sắc đánh giá Giáo viên dạy giỏi, GVCN giỏi cấp tỉnh (10/2025). Giám thị Hội đồng coi thi chọn HSG Tỉnh.</p>
+                        </div>
+                        <div class="tl-item">
+                            <div class="tl-date">2024 - Nay</div>
+                            <div class="tl-title">Nghiên Cứu & Đổi Mới</div>
+                            <p>Tham gia Cuộc thi Sáng tạo Kỹ thuật tỉnh Đồng Tháp (lần 18), đẩy mạnh giáo dục STEM, đóng góp vào ngân hàng đề thi chung cấp Tỉnh.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Photo Gallery Academic -->
+                <div class="bento-box span-6 row-span-2">
+                    <h3 class="box-title"><i class="fas fa-camera-retro"></i> Dấu Ấn Chuyên Môn</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; height: 100%;">
+                        <div class="img-card" style="grid-column: span 2;">
+                            <img src="trai-xuan-2026.jpg" alt="Trại Xuân 2026">
+                            <div class="img-label">Cắm trại Xuân 2026 cùng Chi đoàn 11C1</div>
+                        </div>
+                        <div class="img-card">
+                            <img src="gacthi1.jpg" alt="Gác thi HSG">
+                            <div class="img-label">Hội đồng thi HSG Tỉnh</div>
+                        </div>
+                        <div class="img-card">
+                            <img src="gacthi2.jpg" alt="Đồng nghiệp">
+                            <div class="img-label">Tình đồng nghiệp</div>
+                        </div>
+                        <div class="img-card">
+                            <img src="ngay-8-3.jpg" alt="Ngày 8/3">
+                            <div class="img-label">Tổ Toán - 8/3</div>
+                        </div>
+                        <div class="img-card">
+                            <img src="cuoinam.jpg" alt="Tổng kết">
+                            <div class="img-label">Tổng kết cuối năm</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ==========================================================================
+             VIEW: PERSONAL (NỘI TÂM)
+             ========================================================================== -->
+        <div id="view-personal" class="cv-view">
+            <div class="bento-grid">
+                
+                <!-- Quote Banner -->
+                <div class="bento-box span-12" style="background: rgba(0,0,0,0.3); justify-content: center;">
+                    <i class="fas fa-quote-left quote-mark"></i>
+                    <div class="quote-text">
+                        "Một linh hồn lãng mạn bị trói chặt<br>vào một thân xác khổ sở vì tình."
+                    </div>
+                </div>
+
+                <!-- Hero Personal -->
+                <div class="bento-box span-8 row-span-2">
+                    <div class="typewriter">Who_Am_I_Behind_The_Chalkboard.exe</div>
+                    <h1 class="hero-title">Kẻ Mộng Mơ<br><span class="gradient-text">Giữa Đời Thực</span></h1>
+                    <p style="font-size: 1.1rem; margin-top: 15px;">
+                        Bỏ lại sau lưng bục giảng, những con số khô khan và áp lực kỳ vọng, tôi trở về nhà là một người trẻ với nhiều suy tư tĩnh lặng. 
+                        Tôi trân trọng những khoảng không gian cá nhân, nơi tôi được phép <span class="highlight-text">sống chậm lại, buồn một mình và tự chữa lành.</span>
+                    </p>
+                    <p style="margin-top: 15px;">
+                        Sống là một hành trình dài của những cuộc rong chơi và những khoảng lặng.
+                    </p>
+                </div>
+
+                <!-- Avatar Personal -->
+                <div class="bento-box span-4 row-span-2" style="padding: 0; background: transparent; border: none; box-shadow: none;">
+                    <div class="avatar-wrapper">
+                        <div class="avatar-container">
+                            <img src="ANH-CA-NHAN-CS.jpg" alt="Nội tâm" onerror="this.src='canhan2.png'; this.onerror=null;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gaming & Virtual World -->
+                <div class="bento-box span-6 row-span-2">
+                    <h3 class="box-title"><i class="fas fa-gamepad"></i> Thế Giới Ảo</h3>
+                    <p>Nơi trút bỏ áp lực thực tại, rèn luyện phản xạ và tư duy chiến thuật.</p>
+                    <ul class="info-list" style="margin-top: 15px;">
+                        <li><strong>Liên Quân Mobile:</strong> Đắm chìm vào những pha combat kịch tính, đòi hỏi sự tập trung cao độ và tính đồng đội.</li>
+                        <li><strong>Chiến thuật & Gacha:</strong> Khám phá cốt truyện của Võ Lâm Đại Minh Tinh, Hero Clash, Pocket Quest.</li>
+                        <li><strong>Chữa lành:</strong> Tìm về sự bình yên, thư thái với công việc đồng áng trong Hay Day.</li>
+                    </ul>
+                    <div class="img-card" style="margin-top: 15px;">
+                        <img src="lien-quan.jpg" alt="Liên Quân" style="object-position: center 30%;">
+                        <div class="img-label">Góc giải trí - Liên Quân Mobile</div>
+                    </div>
+                </div>
+
+                <!-- Animation / Donghua -->
+                <div class="bento-box span-6 row-span-2">
+                    <h3 class="box-title"><i class="fas fa-dragon"></i> Hoạt Hình Tu Tiên</h3>
+                    <p>
+                        Đam mê theo dõi các bộ hoạt hình 3D, đặc biệt là tuyệt tác <span class="highlight-text">Tiên Nghịch</span>. 
+                        Hành trình của Vương Lâm với ý chí "nghịch thiên cải mệnh", từ một thiếu niên bình thường từng bước tu luyện vượt qua đau khổ, mất mát để nắm giữ số phận... 
+                        Nó như một tấm gương phản chiếu khao khát vượt qua những trói buộc của thực tại trong tâm hồn tôi.
+                    </p>
+                    <div class="img-card" style="margin-top: auto; min-height: 200px;">
+                        <img src="tien-nghich.jpg" alt="Tiên Nghịch" style="object-position: center top;">
+                        <div class="img-label">Tiên Nghịch - Nghịch thiên cải mệnh</div>
+                    </div>
+                </div>
+
+                <!-- Poetry -->
+                <div class="bento-box span-5 row-span-2">
+                    <h3 class="box-title"><i class="fas fa-feather-alt"></i> Văn Chương & Mâu Thuẫn</h3>
+                    <p>
+                        Tôi tìm thấy trong thơ <strong>Chế Lan Viên</strong> một vũ trụ ngôn từ kỳ vĩ, lãng mạn nhưng cũng đầy triết lý. 
+                        Thế nhưng, tôi lại mang một nỗi <em>sợ hãi mơ hồ</em> trước những nhận định quá đỗi sắc sảo, trần trụi và gai góc của cụ về cuộc đời. 
+                        Nó chạm vào những phần dễ tổn thương nhất của một nội tâm luôn khao khát yêu thương.
+                    </p>
+                    <div class="img-card" style="margin-top: 15px;">
+                        <img src="che-lan-vien.jpg" alt="Chế Lan Viên" style="object-position: center 20%;">
+                        <div class="img-label">Suy ngẫm cùng thơ Chế Lan Viên</div>
+                    </div>
+                </div>
+
+                <!-- Zen & Connect -->
+                <div class="bento-box span-7 row-span-2">
+                    <h3 class="box-title"><i class="fas fa-om"></i> Chữa Lành & Kết Nối</h3>
+                    <p>
+                        Giữa guồng quay hối hả, những chuyến <strong>đi chùa</strong> là lúc tôi tìm lại sự tĩnh lặng tuyệt đối. Mùi nhang trầm và sự uy nghiêm nơi cửa Phật giúp tôi buông bỏ oán hận, làm dịu đi những cơn bão lòng. <br><br>
+                        Bên cạnh đó, tôi không ồn ào tụ tập, chỉ trân trọng những khoảnh khắc cười vui hiếm hoi khi đi <strong>xem phim</strong> cùng những người tri kỷ thực sự hiểu mình. Đôi khi, niềm vui đơn giản chỉ là được <strong>ngủ vùi</strong> để trốn tránh thế gian.
+                    </p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: auto; height: 160px;">
+                        <div class="img-card">
+                            <img src="dichua.jpg" alt="Đi chùa">
+                            <div class="img-label">Chút bình yên chốn cửa Phật</div>
+                        </div>
+                        <div class="img-card">
+                            <img src="xemphim.jpg" alt="Xem phim">
+                            <div class="img-label">Khoảnh khắc bên bạn bè</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ==========================================================================
+        // UI & ANIMATION LOGIC
+        // ==========================================================================
+
+        // Fill Progress Bars
+        function animateProgressBars(viewId) {
+            const view = document.getElementById(viewId);
+            const bars = view.querySelectorAll('.skill-fill');
+            bars.forEach(bar => {
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    bar.style.width = bar.getAttribute('data-width');
+                }, 500);
+            });
+        }
+
+        // Bento Box Staggered Entry Animation
+        function animateBentoBoxes(viewId) {
+            const view = document.getElementById(viewId);
+            const boxes = view.querySelectorAll('.bento-box');
+            
+            boxes.forEach(box => box.classList.remove('show'));
+            
+            boxes.forEach((box, index) => {
+                setTimeout(() => {
+                    box.classList.add('show');
+                }, 50 * index); // 50ms stagger
+            });
+        }
+
+        // Toggle Between Academic and Personal Mode
+        function toggleMode() {
+            const body = document.body;
+            const viewAc = document.getElementById('view-academic');
+            const viewPe = document.getElementById('view-personal');
+            const modeText = document.getElementById('mode-text');
+            const switchIcon = document.querySelector('.switch-handle i');
+
+            const isPersonal = body.classList.contains('personal-mode');
+
+            if (isPersonal) {
+                // Switch to Academic
+                body.classList.remove('personal-mode');
+                modeText.innerText = "Học Thuật";
+                switchIcon.className = "fas fa-bolt";
+
+                // Fade out current
+                viewPe.style.opacity = 0;
+                viewPe.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    viewPe.classList.remove('active');
+                    viewAc.classList.add('active');
+                    animateBentoBoxes('view-academic');
+                    animateProgressBars('view-academic');
+                }, 400);
+
+            } else {
+                // Switch to Personal
+                body.classList.add('personal-mode');
+                modeText.innerText = "Nội Tâm";
+                switchIcon.className = "fas fa-moon";
+
+                // Fade out current
+                viewAc.style.opacity = 0;
+                viewAc.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    viewAc.classList.remove('active');
+                    viewPe.classList.add('active');
+                    animateBentoBoxes('view-personal');
+                }, 400);
+            }
+        }
+
+        // Initial Initialization on Page Load
+        document.addEventListener("DOMContentLoaded", () => {
+            document.querySelector('.switch-handle i').className = "fas fa-bolt";
+            animateBentoBoxes('view-academic');
+            animateProgressBars('view-academic');
+        });
+    </script>
+</body>
+</html>
