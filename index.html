@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hồ Sơ Toàn Diện - Nguyễn Nhất Trung Hậu</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Academic Theme - Deep Blue & Cyan */
+            --bg-ac: #020617;
+            --surface-ac: rgba(30, 41, 59, 0.7);
+            --primary-ac: #38bdf8;
+            --secondary-ac: #818cf8;
+            --border-ac: rgba(56, 189, 248, 0.2);
+            --glow-ac: 0 0 20px rgba(56, 189, 248, 0.15);
+            
+            /* Personal Theme - Deep Emerald & Purple */
+            --bg-pe: #022c22; /* Dark green/black */
+            --surface-pe: rgba(6, 78, 59, 0.6);
+            --primary-pe: #34d399;
+            --secondary-pe: #a78bfa;
+            --border-pe: rgba(52, 211, 153, 0.2);
+            --glow-pe: 0 0 20px rgba(52, 211, 153, 0.15);
+
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --font-main: 'Inter', sans-serif;
+            --font-mono: 'Fira Code', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.4s ease, border-color 0.4s ease, opacity 0.4s ease;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-ac);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(56, 189, 248, 0.05), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(129, 140, 248, 0.05), transparent 25%);
+            background-attachment: fixed;
+        }
+
+        body.personal-mode {
+            background-color: var(--bg-pe);
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(52, 211, 153, 0.05), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(167, 139, 250, 0.05), transparent 25%);
+        }
+
+        /* Top Navigation */
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 70px;
+            background: rgba(2, 6, 23, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-ac);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 5vw;
+            z-index: 100;
+        }
+        body.personal-mode nav {
+            background: rgba(2, 44, 34, 0.8);
+            border-bottom: 1px solid var(--border-pe);
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo i { color: var(--primary-ac); }
+        body.personal-mode .logo i { color: var(--primary-pe); }
+
+        .toggle-btn {
+            background: transparent;
+            border: 1px solid var(--primary-ac);
+            color: var(--primary-ac);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex; align-items: center; gap: 8px;
+            box-shadow: var(--glow-ac);
+        }
+        .toggle-btn:hover { background: rgba(56, 189, 248, 0.1); }
+        
+        body.personal-mode .toggle-btn {
+            border-color: var(--primary-pe);
+            color: var(--primary-pe);
+            box-shadow: var(--glow-pe);
+        }
+        body.personal-mode .toggle-btn:hover { background: rgba(52, 211, 153, 0.1); }
+
+        /* Main Container */
+        .main-container {
+            padding: 100px 5vw 50px 5vw;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .cv-view {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        .cv-view.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+            animation: slideUp 0.5s ease forwards;
+        }
+
+        @keyframes slideUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Bento Grid Layout */
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            grid-auto-rows: minmax(150px, auto);
+        }
+
+        .bento-item {
+            background: var(--surface-ac);
+            border: 1px solid var(--border-ac);
+            border-radius: 24px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        body.personal-mode .bento-item {
+            background: var(--surface-pe);
+            border-color: var(--border-pe);
+        }
+        .bento-item:hover { transform: translateY(-5px); box-shadow: var(--glow-ac); }
+        body.personal-mode .bento-item:hover { box-shadow: var(--glow-pe); }
+
+        /* Grid spans */
+        .col-span-1 { grid-column: span 1; }
+        .col-span-2 { grid-column: span 2; }
+        .col-span-3 { grid-column: span 3; }
+        .col-span-4 { grid-column: span 4; }
+        .row-span-2 { grid-row: span 2; }
+
+        /* Component Styles */
+        h1.title {
+            font-size: 2.8rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 10px;
+        }
+        h2.subtitle {
+            font-size: 1.2rem;
+            color: var(--primary-ac);
+            font-weight: 500;
+            margin-bottom: 20px;
+            font-family: var(--font-mono);
+        }
+        body.personal-mode h2.subtitle { color: var(--primary-pe); }
+        
+        h3.block-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            display: flex; align-items: center; gap: 10px;
+            color: #fff;
+        }
+        h3.block-title i { color: var(--primary-ac); }
+        body.personal-mode h3.block-title i { color: var(--primary-pe); }
+
+        p.desc {
+            color: var(--text-muted);
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
+        .avatar-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 16px;
+        }
+
+        .highlight-text {
+            color: var(--primary-ac);
+            font-weight: 600;
+        }
+        body.personal-mode .highlight-text { color: var(--primary-pe); }
+
+        /* Tags */
+        .tag-container {
+            display: flex; flex-wrap: wrap; gap: 10px; margin-top: auto; padding-top: 20px;
+        }
+        .tag {
+            padding: 6px 14px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.85rem;
+            font-family: var(--font-mono);
+        }
+
+        /* Timeline / List */
+        .info-list { list-style: none; }
+        .info-list li {
+            position: relative;
+            padding-left: 20px;
+            margin-bottom: 15px;
+            color: var(--text-muted);
+        }
+        .info-list li::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 8px;
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--primary-ac);
+        }
+        body.personal-mode .info-list li::before { background: var(--primary-pe); }
+        .info-list li strong { color: var(--text-main); display: block; margin-bottom: 3px; font-size: 1.05rem;}
+
+        /* Image integration within bento */
+        .bento-image-wrapper {
+            margin-top: 15px;
+            border-radius: 12px;
+            overflow: hidden;
+            flex: 1;
+            min-height: 150px;
+            position: relative;
+        }
+        .bento-image-wrapper img {
+            width: 100%; height: 100%; object-fit: cover;
+            position: absolute; top: 0; left: 0;
+            filter: brightness(0.8) contrast(1.1);
+            transition: 0.3s;
+        }
+        .bento-image-wrapper:hover img { filter: brightness(1); transform: scale(1.05); }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--primary-ac);
+            line-height: 1;
+        }
+        body.personal-mode .stat-number { color: var(--primary-pe); }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .bento-grid { grid-template-columns: repeat(2, 1fr); }
+            .col-span-3, .col-span-4 { grid-column: span 2; }
+        }
+        @media (max-width: 768px) {
+            .bento-grid { grid-template-columns: 1fr; }
+            .col-span-2, .col-span-3, .col-span-4 { grid-column: span 1; }
+            .row-span-2 { grid-row: span 1; }
+            h1.title { font-size: 2.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">
+            <i class="fas fa-cube"></i> NNTH
+        </div>
+        <button class="toggle-btn" onclick="toggleMode()">
+            <i class="fas fa-random"></i> <span id="toggleText">Xem Hồ Sơ Nội Tâm</span>
+        </button>
+    </nav>
+
+    <div class="main-container">
+        
+        <!-- ==============================================
+             ACADEMIC CV
+        ================================================ -->
+        <div id="view-academic" class="cv-view active">
+            <div class="bento-grid">
+                
+                <!-- Hero Info (Span 2x2) -->
+                <div class="bento-item col-span-2 row-span-2">
+                    <h2 class="subtitle">&gt; init_profile_academic.sh</h2>
+                    <h1 class="title">Nguyễn Nhất<br>Trung Hậu</h1>
+                    <p class="desc" style="font-size: 1.1rem; margin-top: 10px;">
+                        Giáo viên môn Toán học tại <span class="highlight-text">Trường THCS và THPT Phú Thành A</span>. 
+                        Đam mê đổi mới phương pháp giảng dạy, tích hợp tư duy logic Toán học với các ứng dụng công nghệ giáo dục hiện đại.
+                    </p>
+                    <p class="desc" style="margin-top: 15px;">
+                        Không ngừng học hỏi để xây dựng môi trường học tập tương tác, phát triển tư duy phản biện cho học sinh thông qua phương pháp giáo dục STEM và trí tuệ nhân tạo.
+                    </p>
+                    <div class="tag-container">
+                        <span class="tag"><i class="fas fa-envelope"></i> nnth2107@gmail.com</span>
+                        <span class="tag"><i class="fas fa-phone"></i> 0971.738.655</span>
+                        <span class="tag"><i class="fas fa-map-marker-alt"></i> Đồng Tháp</span>
+                    </div>
+                </div>
+
+                <!-- Avatar -->
+                <div class="bento-item col-span-1 row-span-2" style="padding: 10px;">
+                    <img src="anh-dai-dien.JPG" alt="Avatar Học thuật" class="avatar-img" onerror="this.src='https://via.placeholder.com/400x600?text=Avatar+Toan+Hoc'">
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="bento-item col-span-1">
+                    <h3 class="block-title"><i class="fas fa-chalkboard"></i> Giảng dạy</h3>
+                    <div class="stat-number">2025</div>
+                    <p class="desc">Bắt đầu chặng đường ươm mầm tri thức tại THCS & THPT Phú Thành A.</p>
+                </div>
+
+                <div class="bento-item col-span-1">
+                    <h3 class="block-title"><i class="fas fa-laptop-code"></i> EdTech</h3>
+                    <p class="desc">Chuyên gia ứng dụng <span class="highlight-text">Vietschool, OLM, Tracnghiemonline</span> vào quản lý lớp học.</p>
+                </div>
+
+                <!-- Experience Timeline -->
+                <div class="bento-item col-span-2 row-span-2">
+                    <h3 class="block-title"><i class="fas fa-history"></i> Hành Trình Công Tác & Đóng Góp</h3>
+                    <ul class="info-list">
+                        <li>
+                            <strong>Giảng dạy & Phát triển chuyên môn (02/2025 - Nay)</strong>
+                            Trực tiếp đứng lớp bộ môn Toán. Đã hoàn thành xuất sắc đánh giá chuyên môn giáo viên dạy giỏi, GVCN giỏi cấp tỉnh (10/2025). Tham gia tập huấn chuyên sâu bộ Sách giáo khoa mới.
+                        </li>
+                        <li>
+                            <strong>Nghiên cứu khoa học & STEM (2024 - Nay)</strong>
+                            Tham gia Cuộc thi Sáng tạo Kỹ thuật tỉnh Đồng Tháp lần thứ 18. Thúc đẩy phong trào giáo dục STEM cấp quốc gia, hướng dẫn học sinh vận dụng Toán vào thực tiễn.
+                        </li>
+                        <li>
+                            <strong>Xây dựng học liệu số (08/2025)</strong>
+                            Tích cực đóng góp, biên soạn và xây dựng hệ thống ngân hàng đề thi chung của Tỉnh qua các thư mục số dùng chung.
+                        </li>
+                        <li>
+                            <strong>Công tác khảo thí (2025 - 2026)</strong>
+                            Được tín nhiệm làm Giám thị trong Hội đồng coi thi chọn Học sinh giỏi cấp tỉnh (Trường THPT Trần Quốc Toản). Đảm bảo tính minh bạch, nghiêm túc.
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- AI & Tech Skills -->
+                <div class="bento-item col-span-2">
+                    <h3 class="block-title"><i class="fas fa-brain"></i> Ứng dụng AI & Công cụ</h3>
+                    <p class="desc" style="margin-bottom: 15px;">Tiên phong đưa Trí tuệ nhân tạo vào hỗ trợ thiết kế bài giảng, soạn đề và tối ưu hóa thời gian quản lý giáo dục.</p>
+                    <div class="tag-container" style="padding-top: 0;">
+                        <span class="tag">Google Gemini</span>
+                        <span class="tag">ChatGPT Business</span>
+                        <span class="tag">Hệ thống TEMIS</span>
+                        <span class="tag">Google Workspace</span>
+                        <span class="tag">Giáo dục Biến đổi Khí hậu</span>
+                    </div>
+                </div>
+
+                <!-- Photo: Gác thi / Đồng nghiệp -->
+                <div class="bento-item col-span-1 row-span-2">
+                    <h3 class="block-title"><i class="fas fa-users"></i> Khảo thí & Chuyên môn</h3>
+                    <p class="desc">Tham gia hội đồng thi HSG Tỉnh và kết nối đồng nghiệp.</p>
+                    <div class="bento-image-wrapper">
+                        <img src="gacthi1.jpg" alt="Gác thi" onerror="this.src='gacthi2.jpg'">
+                    </div>
+                </div>
+                
+                <div class="bento-item col-span-1 row-span-2">
+                    <h3 class="block-title"><i class="fas fa-users"></i> Tổng Kết & Gắn Kết</h3>
+                    <p class="desc">Những khoảnh khắc tổng kết năm học ý nghĩa bên học sinh.</p>
+                    <div class="bento-image-wrapper">
+                        <img src="cuoinam.jpg" alt="Tổng kết" onerror="this.src='https://via.placeholder.com/300x400'">
+                    </div>
+                </div>
+
+                <!-- Photo: Ngoại khóa -->
+                <div class="bento-item col-span-2 row-span-2">
+                    <h3 class="block-title"><i class="fas fa-campground"></i> Hoạt Động Ngoại Khóa</h3>
+                    <p class="desc">Khơi dậy tinh thần tập thể qua Cắm trại Xuân (Chi đoàn 11C1 Nguyễn Văn Trỗi) và các hoạt động phong trào như kỷ niệm 8/3 cùng Tổ Toán.</p>
+                    <div style="display: flex; gap: 15px; height: 100%; margin-top: 15px;">
+                        <div class="bento-image-wrapper" style="margin-top: 0;">
+                            <img src="trai-xuan-2026.jpg" alt="Trại Xuân">
+                        </div>
+                        <div class="bento-image-wrapper" style="margin-top: 0;">
+                            <img src="ngay-8-3.jpg" alt="Ngày 8/3">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ==============================================
+             PERSONAL CV
+        ================================================ -->
+        <div id="view-personal" class="cv-view">
+            <div class="bento-grid">
+                
+                <!-- Hero Info -->
+                <div class="bento-item col-span-2 row-span-2">
+                    <h2 class="subtitle">/* Bản ngã thực sự */</h2>
+                    <h1 class="title">Kẻ Mộng Mơ<br>Giữa Đời Thực</h1>
+                    <div style="background: rgba(0,0,0,0.3); border-left: 4px solid var(--primary-pe); padding: 15px 20px; margin: 20px 0; font-style: italic;">
+                        "Một linh hồn lãng mạn bị trói chặt vào một thân xác khổ sở vì tình."
+                    </div>
+                    <p class="desc">
+                        Bỏ lại sau lưng bục giảng và những con số khô khan, tôi trở về là một người trẻ với nhiều suy tư tĩnh lặng.
+                        Tôi trân trọng những khoảng không gian cá nhân, nơi tôi được phép <span class="highlight-text">sống chậm lại, buồn một mình và tự chữa lành.</span>
+                    </p>
+                </div>
+
+                <!-- Avatar Personal -->
+                <div class="bento-item col-span-1 row-span-2" style="padding: 10px;">
+                    <img src="ANH-CA-NHAN-CS.jpg" alt="Avatar Nội tâm" class="avatar-img" onerror="this.src='canhan2.png'; this.onerror=null;">
+                </div>
+
+                <!-- Small Info Block -->
+                <div class="bento-item col-span-1">
+                    <h3 class="block-title"><i class="fas fa-bed"></i> Sở thích ngầm</h3>
+                    <p class="desc">Đôi khi, niềm vui lớn nhất chỉ đơn giản là được <strong>ngủ một giấc thật sâu</strong> để chạy trốn khỏi thế giới ồn ào.</p>
+                </div>
+
+                <div class="bento-item col-span-1">
+                    <h3 class="block-title"><i class="fas fa-user-friends"></i> Kết nối</h3>
+                    <p class="desc">Không ồn ào, chỉ cần những buổi đi <strong>xem phim</strong> cùng những người bạn tri kỷ.</p>
+                </div>
+
+                <!-- Gaming Section -->
+                <div class="bento-item col-span-2 row-span-2">
+                    <h3 class="block-title"><i class="fas fa-gamepad"></i> Thế Giới Ảo - Chiến Thuật & Giải Trí</h3>
+                    <p class="desc">Nơi trút bỏ áp lực thực tại và rèn luyện phản xạ, tư duy chiến thuật.</p>
+                    <ul class="info-list" style="margin-top: 15px;">
+                        <li><strong>Liên Quân Mobile:</strong> Nơi những pha combat kịch tính đòi hỏi sự tập trung cao độ và tính đồng đội.</li>
+                        <li><strong>Chiến thuật & Gacha:</strong> Đắm chìm trong Võ Lâm Đại Minh Tinh, Hero Clash, Pocket Quest.</li>
+                        <li><strong>Chữa lành:</strong> Tìm về sự bình yên, thư thái với trang trại Hay Day.</li>
+                    </ul>
+                    <div class="bento-image-wrapper" style="height: 120px; min-height: unset;">
+                        <img src="lien-quan.jpg" alt="Liên Quân Mobile" style="object-position: center 30%;">
+                    </div>
+                </div>
+
+                <!-- Movie & Donghua -->
+                <div class="bento-item col-span-2 row-span-2">
+                    <h3 class="block-title"><i class="fas fa-dragon"></i> Hoạt Hình Tu Tiên</h3>
+                    <p class="desc">
+                        Đam mê theo dõi các bộ hoạt hình 3D, đặc biệt là <strong>Tiên Nghịch</strong>. 
+                        Câu chuyện về Vương Lâm với ý chí "nghịch thiên cải mệnh", từ một thiếu niên bình thường từng bước tu luyện vượt qua đau khổ, mất mát để nắm giữ số phận... 
+                        Đó như một tấm gương phản chiếu khao khát vượt qua những trói buộc của thực tại trong tâm hồn tôi.
+                    </p>
+                    <div class="bento-image-wrapper" style="height: 150px; min-height: unset;">
+                        <img src="tien-nghich.jpg" alt="Tiên Nghịch" style="object-position: center top;">
+                    </div>
+                </div>
+
+                <!-- Poetry -->
+                <div class="bento-item col-span-2 row-span-2">
+                    <h3 class="block-title"><i class="fas fa-feather-alt"></i> Văn Chương & Sự Mâu Thuẫn</h3>
+                    <p class="desc">
+                        Thích đọc và ngẫm nghĩ thơ của cụ <strong>Chế Lan Viên</strong>. 
+                        Tôi tìm thấy trong đó một vũ trụ ngôn từ kỳ vĩ, lãng mạn nhưng cũng đầy triết lý nhân sinh. Thế nhưng, tôi lại mang một nỗi <em>sợ hãi mơ hồ</em> trước những nhận định quá đỗi sắc sảo, trần trụi và gai góc của cụ về con người và cuộc đời. Nó chạm vào những phần dễ tổn thương nhất của một tâm hồn đang "khổ sở vì tình".
+                    </p>
+                    <div class="bento-image-wrapper" style="height: 120px; min-height: unset;">
+                        <img src="che-lan-vien.jpg" alt="Chế Lan Viên" style="object-position: center 20%;">
+                    </div>
+                </div>
+
+                <!-- Spirituality / Zen -->
+                <div class="bento-item col-span-2 row-span-2">
+                    <h3 class="block-title"><i class="fas fa-om"></i> Tâm Linh & Chữa Lành</h3>
+                    <p class="desc">
+                        Giữa guồng quay hối hả, những chuyến <strong>đi chùa</strong> là khoảng thời gian tôi tìm lại sự tĩnh lặng tuyệt đối. Mùi nhang trầm, không gian vắng lặng và sự uy nghiêm nơi cửa Phật giúp tôi buông bỏ những oán hận, chấp niệm và làm dịu đi những cơn bão trong lòng.
+                    </p>
+                    <div style="display: flex; gap: 15px; height: 150px; margin-top: 15px;">
+                        <div class="bento-image-wrapper" style="margin-top: 0;">
+                            <img src="dichua.jpg" alt="Đi chùa">
+                        </div>
+                        <div class="bento-image-wrapper" style="margin-top: 0;">
+                            <img src="xemphim.jpg" alt="Xem phim cùng bạn">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Toggle Logic
+        function toggleMode() {
+            const body = document.body;
+            const viewAc = document.getElementById('view-academic');
+            const viewPe = document.getElementById('view-personal');
+            const toggleText = document.getElementById('toggleText');
+            const toggleBtnIcon = document.querySelector('.toggle-btn i');
+
+            if (body.classList.contains('personal-mode')) {
+                // Đổi về Academic
+                body.classList.remove('personal-mode');
+                
+                viewPe.style.opacity = 0;
+                viewPe.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    viewPe.classList.remove('active');
+                    viewAc.classList.add('active');
+                    setTimeout(() => {
+                        viewAc.style.opacity = 1;
+                        viewAc.style.transform = 'translateY(0)';
+                    }, 50);
+                }, 400);
+
+                toggleText.innerText = "Xem Hồ Sơ Nội Tâm";
+                toggleBtnIcon.className = "fas fa-moon";
+            } else {
+                // Đổi sang Personal
+                body.classList.add('personal-mode');
+                
+                viewAc.style.opacity = 0;
+                viewAc.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    viewAc.classList.remove('active');
+                    viewPe.classList.add('active');
+                    setTimeout(() => {
+                        viewPe.style.opacity = 1;
+                        viewPe.style.transform = 'translateY(0)';
+                    }, 50);
+                }, 400);
+
+                toggleText.innerText = "Xem Hồ Sơ Chuyên Môn";
+                toggleBtnIcon.className = "fas fa-briefcase";
+            }
+        }
+        
+        // Initial setup for icons
+        document.querySelector('.toggle-btn i').className = "fas fa-moon";
+    </script>
+</body>
+</html>
