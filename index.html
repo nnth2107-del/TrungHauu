@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hồ sơ - Nguyễn Nhất Trung Hậu</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,600;0,800;1,400&family=Space+Mono:wght@400;700&display=swap');
+
+        :root {
+            --bg-color: #040d1a;
+            --grid-color: rgba(255, 255, 255, 0.04);
+            
+            /* Academic Theme - Cyan/Blue */
+            --ac-primary: #00e5ff;
+            --ac-secondary: #0055ff;
+            --ac-glow: 0 0 15px rgba(0, 229, 255, 0.5), 0 0 30px rgba(0, 85, 255, 0.3);
+            
+            /* Personal Theme - Emerald/Purple */
+            --pe-primary: #00ff88;
+            --pe-secondary: #8a2be2;
+            --pe-glow: 0 0 15px rgba(0, 255, 136, 0.5), 0 0 30px rgba(138, 43, 226, 0.3);
+
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --glass-bg: rgba(10, 20, 40, 0.6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-color);
+            background-image: 
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 40px 40px;
+            color: var(--text-main);
+            overflow-x: hidden;
+            transition: all 0.5s ease;
+        }
+
+        /* Mode Classes */
+        body.personal-mode {
+            --ac-primary: var(--pe-primary);
+            --ac-secondary: var(--pe-secondary);
+            --ac-glow: var(--pe-glow);
+        }
+
+        /* Typography & Glows */
+        h1, h2, h3 { font-weight: 800; }
+        .glow-text {
+            color: var(--ac-primary);
+            text-shadow: var(--ac-glow);
+        }
+        .mono-text { font-family: 'Space Mono', monospace; }
+
+        /* Navbar */
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            background: rgba(4, 13, 26, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 50px;
+            z-index: 1000;
+        }
+        .nav-logo { font-size: 1.5rem; font-weight: 800; letter-spacing: 1px; }
+        .nav-links { display: flex; gap: 30px; }
+        .nav-links a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: color 0.3s ease;
+            cursor: pointer;
+        }
+        .nav-links a:hover { color: var(--ac-primary); text-shadow: var(--ac-glow); }
+
+        /* Floating Toggle Button */
+        .toggle-btn {
+            position: fixed;
+            bottom: 30px; right: 30px;
+            background: var(--ac-secondary);
+            color: white;
+            border: 2px solid var(--ac-primary);
+            box-shadow: var(--ac-glow);
+            padding: 15px 25px;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            z-index: 1001;
+            transition: all 0.3s ease;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .toggle-btn:hover { transform: scale(1.05); }
+
+        /* Page Layout */
+        .wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 100px 20px 50px 20px;
+        }
+        
+        .cv-container {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        .cv-container.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Hero Section (Horizontal Layout) */
+        .hero {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 80vh;
+            gap: 50px;
+        }
+        .hero-content { flex: 1; }
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+        .hero-title {
+            font-size: 4rem;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+        }
+        .hero-desc {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #cbd5e1;
+            margin-bottom: 30px;
+        }
+        
+        /* Glowing Avatar */
+        .hero-visual {
+            flex: 0 0 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .avatar-ring {
+            width: 350px;
+            height: 350px;
+            border-radius: 50%;
+            padding: 10px;
+            background: conic-gradient(from 0deg, var(--ac-primary), var(--ac-secondary), transparent 50%);
+            animation: spin 10s linear infinite;
+            position: relative;
+            box-shadow: var(--ac-glow);
+        }
+        .avatar-inner {
+            width: 100%; height: 100%;
+            background: var(--bg-color);
+            border-radius: 50%;
+            overflow: hidden;
+            animation: spin 10s linear infinite reverse; /* Counter-spin image */
+            display: flex; align-items: center; justify-content: center;
+        }
+        .avatar-inner img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        .contact-box {
+            margin-top: 30px;
+            display: flex; gap: 20px;
+            background: var(--glass-bg);
+            padding: 15px 30px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .contact-box i { font-size: 1.5rem; cursor: pointer; transition: 0.3s; }
+        .contact-box i:hover { color: var(--ac-primary); text-shadow: var(--ac-glow); transform: translateY(-3px); }
+
+        /* Sections */
+        section {
+            padding: 80px 0;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+        .sec-title {
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .timeline::before {
+            content: ''; position: absolute;
+            left: 50%; top: 0; bottom: 0; width: 2px;
+            background: rgba(255,255,255,0.1);
+            transform: translateX(-50%);
+        }
+        .tl-item {
+            display: flex; justify-content: space-between;
+            align-items: center; margin-bottom: 50px;
+        }
+        .tl-item:nth-child(even) { flex-direction: row-reverse; }
+        .tl-content {
+            width: 45%;
+            background: var(--glass-bg);
+            padding: 30px; border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.05);
+            position: relative;
+        }
+        .tl-content:hover { border-color: var(--ac-primary); box-shadow: var(--ac-glow); }
+        .tl-year { color: var(--ac-primary); font-weight: bold; margin-bottom: 10px; font-size: 1.2rem; }
+        .tl-dot {
+            width: 20px; height: 20px;
+            background: var(--ac-primary);
+            border-radius: 50%;
+            position: absolute; left: 50%;
+            transform: translateX(-50%);
+            box-shadow: var(--ac-glow);
+        }
+
+        /* Skills Progress */
+        .skills-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 40px;
+            max-width: 900px; margin: 0 auto;
+        }
+        .skill-item { margin-bottom: 20px; }
+        .skill-info { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .progress-bar {
+            width: 100%; height: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px; overflow: hidden;
+        }
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--ac-secondary), var(--ac-primary));
+            box-shadow: var(--ac-glow);
+        }
+
+        /* Gallery Grid */
+        .gallery-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .gallery-card {
+            position: relative; border-radius: 15px; overflow: hidden;
+            aspect-ratio: 4/3; cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .gallery-card img {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: 0.5s ease; filter: grayscale(20%);
+        }
+        .gallery-card:hover img { transform: scale(1.1); filter: grayscale(0%); }
+        .gallery-overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            display: flex; flex-direction: column; justify-content: flex-end;
+            padding: 20px; opacity: 0; transition: 0.3s;
+        }
+        .gallery-card:hover .gallery-overlay { opacity: 1; }
+
+        /* Quotes & Cards */
+        .quote-box {
+            background: var(--glass-bg);
+            border-left: 5px solid var(--ac-primary);
+            padding: 40px; font-size: 1.5rem; font-style: italic;
+            border-radius: 0 15px 15px 0; margin: 40px auto; max-width: 800px;
+            text-align: center; line-height: 1.6;
+        }
+        .hobby-card {
+            background: var(--glass-bg);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 30px; border-radius: 15px;
+            text-align: center; transition: 0.3s;
+        }
+        .hobby-card:hover { border-color: var(--ac-primary); transform: translateY(-10px); }
+        .hobby-card img { width: 100%; height: 200px; object-fit: cover; border-radius: 10px; margin-top: 20px; }
+
+        @media (max-width: 900px) {
+            .hero { flex-direction: column; text-align: center; }
+            .nav-links { display: none; }
+            .timeline::before { left: 30px; }
+            .tl-item, .tl-item:nth-child(even) { flex-direction: column; align-items: flex-start; padding-left: 60px; }
+            .tl-content { width: 100%; }
+            .tl-dot { left: 30px; }
+            .skills-grid { grid-template-columns: 1fr; }
+            .avatar-ring { width: 250px; height: 250px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav>
+        <div class="nav-logo glow-text">NNTH<span style="color:white">.cv</span></div>
+        <div class="nav-links">
+            <a onclick="scrollToSec('intro')">Giới thiệu</a>
+            <a onclick="scrollToSec('timeline')">Quá trình</a>
+            <a onclick="scrollToSec('skills')">Kỹ năng</a>
+            <a onclick="scrollToSec('gallery')">Bộ sưu tập</a>
+        </div>
+    </nav>
+
+    <!-- TOGGLE BUTTON -->
+    <button class="toggle-btn" onclick="toggleMode()">
+        <i class="fas fa-sync-alt"></i> <span id="toggleText">Lật sang Hồ sơ Cá Nhân</span>
+    </button>
+
+    <div class="wrapper">
+        
+        <!-- ==============================================
+             ACADEMIC CV (DEFAULT)
+        ================================================ -->
+        <div id="academic-cv" class="cv-container active">
+            
+            <section id="intro" class="hero">
+                <div class="hero-content">
+                    <div class="hero-subtitle mono-text">Chào mừng đến với Hồ sơ Chuyên môn</div>
+                    <h1 class="hero-title">Võ Hiếu... à nhầm,<br><span class="glow-text">Nguyễn Nhất Trung Hậu</span></h1>
+                    <div class="hero-desc">
+                        Cử nhân Sư phạm Toán học | Giáo viên tại THCS & THPT Phú Thành A.<br>
+                        Định hướng nghiên cứu chuyên sâu về đổi mới phương pháp giảng dạy Toán, ứng dụng Công nghệ Giáo dục (EdTech), Trí tuệ nhân tạo (AI), và phát triển tư duy logic thông qua giáo dục STEM.
+                    </div>
+                    <div style="display: flex; gap: 20px;">
+                        <a href="#contact" style="background:var(--ac-primary); color:#000; padding:12px 25px; border-radius:5px; text-decoration:none; font-weight:bold;"><i class="fas fa-envelope"></i> Liên hệ công tác</a>
+                        <a href="#timeline" style="border:1px solid var(--ac-primary); color:white; padding:12px 25px; border-radius:5px; text-decoration:none; font-weight:bold;"><i class="fas fa-folder-open"></i> Quá trình công tác</a>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="avatar-ring">
+                        <div class="avatar-inner">
+                            <img src="anh-dai-dien.JPG" alt="Avatar Học thuật" onerror="this.src='https://via.placeholder.com/350/001133/00e5ff?text=Avatar+Hoc+Thuat'">
+                        </div>
+                    </div>
+                    <div class="contact-box">
+                        <i class="fab fa-facebook-f"></i>
+                        <i class="fab fa-github"></i>
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                </div>
+            </section>
+
+            <section id="timeline">
+                <h2 class="sec-title glow-text">Quá Trình Công Tác & Học Tập</h2>
+                <div class="timeline">
+                    <div class="tl-item">
+                        <div class="tl-dot"></div>
+                        <div class="tl-content">
+                            <div class="tl-year">01/02/2025 - Hiện tại</div>
+                            <h3>Giáo viên Toán</h3>
+                            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:10px;">Trường THCS và THPT Phú Thành A</p>
+                            <p>Đảm nhiệm giảng dạy chính thức bộ môn Toán học. Áp dụng các phương pháp dạy học tích cực, tổ chức hoạt động trải nghiệm STEM.</p>
+                        </div>
+                    </div>
+                    <div class="tl-item">
+                        <div class="tl-dot"></div>
+                        <div class="tl-content">
+                            <div class="tl-year">2025 - 2026</div>
+                            <h3>Hoạt Động Chuyên Môn Nổi Bật</h3>
+                            <p>Tham gia đánh giá Giáo viên dạy giỏi, Giáo viên chủ nhiệm giỏi cấp tỉnh (10/2025). Tham gia Hội đồng coi thi chọn HSG cấp tỉnh. Tập huấn chương trình SGK mới.</p>
+                        </div>
+                    </div>
+                    <div class="tl-item">
+                        <div class="tl-dot"></div>
+                        <div class="tl-content">
+                            <div class="tl-year">2024 - 2025</div>
+                            <h3>Nghiên Cứu & Đổi Mới</h3>
+                            <p>Tham gia Cuộc thi Sáng tạo Kỹ thuật tỉnh Đồng Tháp lần thứ 18. Nghiên cứu ứng dụng các công cụ AI (Gemini, ChatGPT, TEMIS) vào quản lý lớp học và thiết kế bài giảng.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="skills">
+                <h2 class="sec-title glow-text">Kỹ Năng Kỹ Thuật & Sư Phạm</h2>
+                <div class="skills-grid">
+                    <div>
+                        <div class="skill-item">
+                            <div class="skill-info"><span>Chuyên môn Toán Học</span><span class="mono-text">95%</span></div>
+                            <div class="progress-bar"><div class="progress" style="width: 95%;"></div></div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-info"><span>Phương pháp Giáo dục STEM</span><span class="mono-text">85%</span></div>
+                            <div class="progress-bar"><div class="progress" style="width: 85%;"></div></div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-info"><span>Tâm lý học đường</span><span class="mono-text">80%</span></div>
+                            <div class="progress-bar"><div class="progress" style="width: 80%;"></div></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="skill-item">
+                            <div class="skill-info"><span>Vietschool / Tracnghiemonline / OLM</span><span class="mono-text">90%</span></div>
+                            <div class="progress-bar"><div class="progress" style="width: 90%;"></div></div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-info"><span>Google Classroom & Office 365</span><span class="mono-text">95%</span></div>
+                            <div class="progress-bar"><div class="progress" style="width: 95%;"></div></div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-info"><span>Ứng dụng AI (Gemini, ChatGPT)</span><span class="mono-text">88%</span></div>
+                            <div class="progress-bar"><div class="progress" style="width: 88%;"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="gallery">
+                <h2 class="sec-title glow-text">Công Trình & Hoạt Động (Gallery)</h2>
+                <div class="gallery-grid">
+                    <div class="gallery-card">
+                        <img src="gacthi1.jpg" alt="Gác thi HSG" onerror="this.src='https://via.placeholder.com/400x300?text=Gac+Thi'">
+                        <div class="gallery-overlay">
+                            <h3>Hội đồng thi HSG Cấp Tỉnh</h3>
+                            <p>Tham gia công tác coi thi, đảm bảo tính minh bạch và công bằng.</p>
+                        </div>
+                    </div>
+                    <div class="gallery-card">
+                        <img src="gacthi2.jpg" alt="Đồng nghiệp" onerror="this.src='https://via.placeholder.com/400x300?text=Dong+Nghiep'">
+                        <div class="gallery-overlay">
+                            <h3>Kỷ niệm cùng đồng nghiệp</h3>
+                            <p>Khoảnh khắc gắn bó sau giờ làm việc căng thẳng.</p>
+                        </div>
+                    </div>
+                    <div class="gallery-card">
+                        <img src="trai-xuan-2026.jpg" alt="Trại Xuân 2026" onerror="this.src='https://via.placeholder.com/400x300?text=Trai+Xuan+2026'">
+                        <div class="gallery-overlay">
+                            <h3>Cắm trại Xuân 2026</h3>
+                            <p>Chi đoàn 11C1 Nguyễn Văn Trỗi - Gắn kết tình thầy trò.</p>
+                        </div>
+                    </div>
+                    <div class="gallery-card">
+                        <img src="ngay-8-3.jpg" alt="Ngày 8/3" onerror="this.src='https://via.placeholder.com/400x300?text=Ngay+8/3'">
+                        <div class="gallery-overlay">
+                            <h3>Kỷ niệm 8/3 Tổ Toán</h3>
+                            <p>Tham gia tổ chức ngày Quốc tế Phụ nữ cùng tập thể sư phạm.</p>
+                        </div>
+                    </div>
+                    <div class="gallery-card">
+                        <img src="cuoinam.jpg" alt="Tổng kết" onerror="this.src='https://via.placeholder.com/400x300?text=Tong+Ket'">
+                        <div class="gallery-overlay">
+                            <h3>Tổng kết cuối năm</h3>
+                            <p>Những nụ cười rạng rỡ của học sinh ngày bế giảng.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+
+        <!-- ==============================================
+             PERSONAL CV
+        ================================================ -->
+        <div id="personal-cv" class="cv-container">
+            
+            <section class="hero">
+                <div class="hero-content">
+                    <div class="hero-subtitle mono-text">Chào mừng đến với Hồ sơ Nội Tâm</div>
+                    <h1 class="hero-title">Tôi là,<br><span class="glow-text">Nguyễn Nhất Trung Hậu</span></h1>
+                    <div class="hero-desc">
+                        Một người mang trong mình nhiều tâm sự. Ở trường là một thầy giáo, trở về nhà là một người thích sự tĩnh lặng, thích chơi game, thích cày phim và thi thoảng để mặc bản thân chìm vào những khoảng không suy tư vô định.
+                    </div>
+                    <div class="quote-box glow-text" style="font-size:1.2rem; padding: 20px; border-radius: 10px; margin:0; text-align:left;">
+                        "Một linh hồn lãng mạn bị trói chặt vào một thân xác khổ sở vì tình."
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="avatar-ring">
+                        <div class="avatar-inner">
+                            <!-- Try exact casing from user, fallback to lowercase -->
+                            <img src="ANH-CA-NHAN-CS.jpg" alt="Avatar Cá nhân" onerror="this.src='canhan2.png'; this.onerror=null;">
+                        </div>
+                    </div>
+                    <div class="contact-box">
+                        <i class="fab fa-instagram"></i>
+                        <i class="fab fa-spotify"></i>
+                        <i class="fab fa-discord"></i>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="sec-title glow-text">Góc Khuất Tầm Hồn</h2>
+                
+                <div class="skills-grid">
+                    <div class="hobby-card">
+                        <i class="fas fa-gamepad" style="font-size: 3rem; color: var(--ac-primary); margin-bottom: 20px;"></i>
+                        <h3>Thế Giới Ảo</h3>
+                        <p style="margin-top: 10px; color: var(--text-muted);">Xả stress qua những trận leo rank căng thẳng. Chinh chiến trong Liên Quân Mobile, Võ Lâm Đại Minh Tinh, Hero Clash hay thư giãn cùng Hay Day.</p>
+                        <img src="lien-quan.jpg" alt="Liên Quân" onerror="this.src='https://via.placeholder.com/300x200?text=Lien+Quan+Mobile'">
+                    </div>
+                    
+                    <div class="hobby-card">
+                        <i class="fas fa-film" style="font-size: 3rem; color: var(--ac-primary); margin-bottom: 20px;"></i>
+                        <h3>Điện Ảnh & Hoạt Hình</h3>
+                        <p style="margin-top: 10px; color: var(--text-muted);">Đam mê thể loại tu tiên nghịch thiên cải mệnh. Theo dõi từng tập của "Tiên Nghịch" và thích những buổi đi xem phim cùng bạn bè.</p>
+                        <img src="tien-nghich.jpg" alt="Tiên Nghịch" onerror="this.src='https://via.placeholder.com/300x200?text=Tien+Nghich'">
+                    </div>
+
+                    <div class="hobby-card">
+                        <i class="fas fa-book" style="font-size: 3rem; color: var(--ac-primary); margin-bottom: 20px;"></i>
+                        <h3>Văn Chương & Suy Tư</h3>
+                        <p style="margin-top: 10px; color: var(--text-muted);">Thích đọc thơ Chế Lan Viên nhưng lại sợ những nhận định quá đỗi chân thật và gai góc của cụ về cuộc đời. Thích nằm ngủ và buồn một mình.</p>
+                        <img src="che-lan-vien.jpg" alt="Chế Lan Viên" onerror="this.src='https://via.placeholder.com/300x200?text=Che+Lan+Vien'">
+                    </div>
+
+                    <div class="hobby-card">
+                        <i class="fas fa-yin-yang" style="font-size: 3rem; color: var(--ac-primary); margin-bottom: 20px;"></i>
+                        <h3>Tâm Linh & Kết Nối</h3>
+                        <p style="margin-top: 10px; color: var(--text-muted);">Tìm kiếm sự bình yên, thanh tịnh bằng việc đi chùa. Trân trọng những khoảnh khắc vui vẻ hiếm hoi bên những người bạn hiểu mình.</p>
+                        <img src="dichua.jpg" alt="Đi chùa" onerror="this.src='https://via.placeholder.com/300x200?text=Di+Chua'">
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="sec-title glow-text">Khoảnh Khắc Của Tôi</h2>
+                <div class="gallery-grid" style="grid-template-columns: 1fr 1fr;">
+                    <div class="gallery-card">
+                        <img src="xemphim.jpg" alt="Xem phim cùng bạn" onerror="this.src='https://via.placeholder.com/600x400?text=Xem+Phim'">
+                        <div class="gallery-overlay">
+                            <h3>Bên Bạn Bè</h3>
+                            <p>Những phút giây thư giãn ngoài rạp chiếu phim.</p>
+                        </div>
+                    </div>
+                    <div class="gallery-card">
+                        <!-- Fallback using canhan2.png just in case -->
+                        <img src="canhan2.png" alt="Ảnh cá nhân 2" onerror="this.src='https://via.placeholder.com/600x400?text=Ca+Nhan+2'">
+                        <div class="gallery-overlay">
+                            <h3>Khoảng Lặng</h3>
+                            <p>Góc nhỏ của riêng mình.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+    </div>
+
+    <script>
+        // Smooth scrolling for navigation links
+        function scrollToSec(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Mode Toggling Logic
+        function toggleMode() {
+            const body = document.body;
+            const academicCv = document.getElementById('academic-cv');
+            const personalCv = document.getElementById('personal-cv');
+            const toggleText = document.getElementById('toggleText');
+
+            if (body.classList.contains('personal-mode')) {
+                // Đang ở Personal -> Đổi về Academic
+                body.classList.remove('personal-mode');
+                
+                personalCv.style.opacity = 0;
+                personalCv.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    personalCv.classList.remove('active');
+                    academicCv.classList.add('active');
+                    
+                    setTimeout(() => {
+                        academicCv.style.opacity = 1;
+                        academicCv.style.transform = 'translateY(0)';
+                    }, 50);
+                }, 600);
+
+                toggleText.innerText = "Lật sang Hồ sơ Cá Nhân";
+            } else {
+                // Đang ở Academic -> Đổi sang Personal
+                body.classList.add('personal-mode');
+                
+                academicCv.style.opacity = 0;
+                academicCv.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    academicCv.classList.remove('active');
+                    personalCv.classList.add('active');
+                    
+                    setTimeout(() => {
+                        personalCv.style.opacity = 1;
+                        personalCv.style.transform = 'translateY(0)';
+                    }, 50);
+                }, 600);
+
+                toggleText.innerText = "Lật sang Hồ sơ Học Thuật";
+            }
+        }
+
+        // Initialize display state
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById('academic-cv').style.opacity = 1;
+            document.getElementById('academic-cv').style.transform = 'translateY(0)';
+        });
+    </script>
+</body>
+</html>
